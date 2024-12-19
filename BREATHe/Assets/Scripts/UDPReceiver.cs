@@ -1,33 +1,34 @@
+using System;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
-public class UDPReceiver : MonoBehaviour
+public class UDPReceiver : MonosingletonTemp<UDPReceiver>
 {
-    public static UDPReceiver Instance { get; private set; } // 单例模式
+    // Singleton pattern
 
-    public int port = 65432; // 默认端口
+    public int port = 65432; // Default port
     private UdpClient udpClient;
     private IPEndPoint remoteEndPoint;
 
-    public Rigidbody2D playerRigidbody;   // 2D 角色的 Rigidbody2D 组件
-    public float baseJumpForce = 15.0f;   // 基础跳跃力度
-    private float adjustedJumpForce;      // 动态调整后的跳跃力度
-    private float gravityScale = 1.0f;    // 重力缩放
-    private float lastTimeScale = 5.0f;   // 时间因子
+    public Rigidbody2D playerRigidbody;   // Player's Rigidbody2D component
+    public float baseJumpForce = 15.0f;    // Base jump force
+    private float adjustedJumpForce;       // Dynamically adjusted jump force
+    private float gravityScale = 1.0f;     // Gravity scale
+    private float lastTimeScale = 5.0f;    // Time scale
     private bool timeScaleUpdated = false;
-    private float recoveryRate = 0.1f;  // 恢复速率
+    private float recoveryRate = 0.1f;     // Recovery rate
 
     private UIManager uiManager;
 
-    // 新手引导阶段布尔值
-    private bool isTutorialStage = false;  // 默认不在新手引导阶段
+    // Tutorial stage parameters
+    [SerializeField]private bool isTutorialStage = false;  // Default not in tutorial stage
 
-    // 动态范围阈值
-    private float dynamicMinThreshold = 0.005f; // 呼吸强度的最小阈值
-    private float dynamicMaxThreshold = 0.02f;  // 呼吸强度的最大阈值
+    // Dynamic threshold values
+    private float dynamicMinThreshold = 0.005f; // Minimum threshold for breath intensity
+    private float dynamicMaxThreshold = 0.02f;  // Maximum threshold for breath intensity
 
     void Start()
     {
@@ -37,8 +38,8 @@ public class UDPReceiver : MonoBehaviour
         uiManager = FindObjectOfType<UIManager>();
         TryFindPlayerRigidbody();
 
-        // 自动进入新手引导阶段
-        //StartTutorial();
+        // Auto-start tutorial
+        StartTutorial();
     }
 
     void Update()
@@ -47,41 +48,57 @@ public class UDPReceiver : MonoBehaviour
 
         if (udpClient == null)
         {
-            Debug.LogWarning("[UDPReceiver] udpClient 未初始化。");
+            Debug.LogWarning("[UDPReceiver] udpClient not initialized, attempting to reinitialize...");
+            InitializeUDP();
             return;
         }
 
-        if (udpClient.Available > 0)
+        try 
         {
-            Debug.Log("[UDPReceiver] 数据可用，尝试接收数据...");
-            try
+            // Debug.Log($"[UDPReceiver] Checking UDP availability: {udpClient.Available} bytes");
+            
+            if (udpClient.Available > 0)
             {
-                byte[] data = udpClient.Receive(ref remoteEndPoint);
-                string jsonData = Encoding.UTF8.GetString(data);
-                Debug.Log($"[UDPReceiver] 接收到数据: {jsonData}");
-
-                var parsedData = JsonUtility.FromJson<BreathData>(jsonData);
-                Debug.Log($"[UDPReceiver] 解析结果 -> time_scale: {parsedData.time_scale}, intensity: {parsedData.intensity}");
-
-                lastTimeScale = parsedData.time_scale;
-                timeScaleUpdated = true;
-
-                if (isTutorialStage)
+                Debug.Log("[UDPReceiver] Data available, processing...");
+                try
                 {
-                    // 如果处于新手引导阶段，动态调整阈值
-                    AdjustThresholdsDuringTutorial(parsedData);
+                    byte[] data = udpClient.Receive(ref remoteEndPoint);
+                    string jsonData = Encoding.UTF8.GetString(data);
+                    Debug.Log($"[UDPReceiver] Received data: {jsonData}");
+
+                    var parsedData = JsonUtility.FromJson<BreathData>(jsonData);
+                    Debug.Log($"[UDPReceiver] Parsed data -> time_scale: {parsedData.time_scale}, intensity: {parsedData.intensity}");
+
+                    lastTimeScale = parsedData.time_scale;
+                    timeScaleUpdated = true;
+
+                    if (isTutorialStage)
+                    {
+                        // Dynamically adjust thresholds during tutorial
+                        AdjustThresholdsDuringTutorial(parsedData);
+                    }
+                    else
+                    {
+                        // Regular gameplay, adjust jump and gravity
+                        AdjustJumpAndGravity(lastTimeScale);
+                        PerformJump();
+                    }
                 }
-                else
+                catch (System.Exception e)
                 {
-                    // 否则，继续正常接收数据
-                    AdjustJumpAndGravity(lastTimeScale);
-                    PerformJump();
+                    Debug.LogError($"[UDPReceiver] Error processing data: {e.Message}");
                 }
             }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"[UDPReceiver] 数据接收或解析错误: {e.Message}");
-            }
+        }
+        catch (SocketException e)
+        {
+            Debug.LogError($"[UDPReceiver] Socket error: {e.Message}. Attempting to reinitialize UDP...");
+            ReleaseUDPResources();
+            InitializeUDP();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[UDPReceiver] Unexpected error: {e.Message}");
         }
 
         if (!timeScaleUpdated)
@@ -94,36 +111,54 @@ public class UDPReceiver : MonoBehaviour
     {
         try
         {
+            if (udpClient != null)
+            {
+                Debug.Log("[UDPReceiver] Closing existing UDP client before reinitializing...");
+                ReleaseUDPResources();
+            }
+
             udpClient = new UdpClient(port);
-            remoteEndPoint = new IPEndPoint(IPAddress.Any, port); // 监听来自任何 IP 的数据
-            udpClient.EnableBroadcast = true;  // 如果需要广播功能，可以启用广播
-            udpClient.Client.ReceiveTimeout = 100;  // 设置接收超时（毫秒）
-            Debug.Log($"[UDPReceiver] UDP 客户端初始化成功，端口号: {port}");
+            remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
+            udpClient.EnableBroadcast = true;
+            Debug.Log($"[UDPReceiver] UDP client initialized successfully on port: {port}");
+            
+            // 娴嬭瘯 UDP 鏄惁姝ｅ父宸ヤ綔
+            byte[] testData = Encoding.UTF8.GetBytes("test");
+            try
+            {
+                udpClient.Send(testData, testData.Length, "127.0.0.1", port);
+                Debug.Log("[UDPReceiver] Test packet sent successfully");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[UDPReceiver] Failed to send test packet: {e.Message}");
+            }
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"[UDPReceiver] 初始化 UDP 客户端时出错: {e.Message}");
+            Debug.LogError($"[UDPReceiver] Error initializing UDP client: {e.Message}");
+            udpClient = null;
         }
     }
 
     private void AdjustThresholdsDuringTutorial(BreathData parsedData)
     {
-        // 新手引导阶段动态调整呼吸强度的阈值
-        // 根据玩家的呼吸强度来调整动态阈值，直到新手引导结束
+        // Dynamically adjust thresholds during tutorial
+        // Based on player's breath intensity, adjust dynamic thresholds
         dynamicMinThreshold = Mathf.Lerp(0.005f, 0.02f, Mathf.Clamp01(parsedData.intensity));
-        dynamicMaxThreshold = Mathf.Lerp(0.02f, 0.05f, Mathf.Clamp01(parsedData.intensity));  // 示例范围
+        dynamicMaxThreshold = Mathf.Lerp(0.02f, 0.05f, Mathf.Clamp01(parsedData.intensity));  // Example range
 
-        Debug.Log($"[UDPReceiver] 当前动态阈值: minThreshold={dynamicMinThreshold}, maxThreshold={dynamicMaxThreshold}");
+        Debug.Log($"[UDPReceiver] Current dynamic thresholds: minThreshold={dynamicMinThreshold}, maxThreshold={dynamicMaxThreshold}");
 
-        // 向 Python 发送更新后的阈值
+        // Send updated thresholds to Python
         SendThresholdsToPython(dynamicMinThreshold, dynamicMaxThreshold);
     }
 
     private void AdjustJumpAndGravity(float timeScale)
     {
-        timeScale = Mathf.Clamp(timeScale, 0.1f, 5.0f); // 限制时间因子的范围
+        timeScale = Mathf.Clamp(timeScale, 0.1f, 5.0f); // Clamp time scale to valid range
 
-        // 根据时间因子调整跳跃力度和重力缩放
+        // Adjust jump force and gravity based on time scale
         adjustedJumpForce = Mathf.Lerp(5f, 15f, (timeScale - 0.1f) / (5.0f - 0.1f));
         gravityScale = Mathf.Lerp(0.5f, 2.0f, (timeScale - 0.1f) / (5.0f - 0.1f));
 
@@ -134,7 +169,7 @@ public class UDPReceiver : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[UDPReceiver] playerRigidbody 未找到，无法调整重力缩放！");
+            Debug.LogWarning("[UDPReceiver] playerRigidbody not found, cannot adjust jump and gravity!");
         }
     }
 
@@ -147,30 +182,30 @@ public class UDPReceiver : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[UDPReceiver] playerRigidbody 未设置，无法跳跃！");
+            Debug.LogWarning("[UDPReceiver] playerRigidbody not found, cannot perform jump!");
         }
     }
 
-    // 结束新手引导阶段
+    // End tutorial mode
     public void EndTutorial()
     {
         isTutorialStage = false;
-        Debug.Log("[UDPReceiver] 新手引导已结束，开始正式游戏！");
+        Debug.Log("[UDPReceiver] Tutorial ended, starting formal game.");
     }
 
-    // 开始新手引导阶段
+    // Start tutorial mode
     public void StartTutorial()
     {
         isTutorialStage = true;
-        Debug.Log("[UDPReceiver] 已进入新手引导阶段。");
+        Debug.Log("[UDPReceiver] Entered tutorial stage.");
     }
 
-    // 向 Python 发送更新后的阈值
+    // Send updated thresholds to Python
     private void SendThresholdsToPython(float minThreshold, float maxThreshold)
     {
         if (udpClient == null)
         {
-            Debug.LogError("[UDPReceiver] udpClient 未初始化，无法发送数据！");
+            Debug.LogError("[UDPReceiver] udpClient not initialized, cannot send data!");
             return;
         }
 
@@ -178,10 +213,10 @@ public class UDPReceiver : MonoBehaviour
         byte[] dataToSend = Encoding.UTF8.GetBytes(thresholdData);
         udpClient.Send(dataToSend, dataToSend.Length, remoteEndPoint);
 
-        Debug.Log($"[UDPReceiver] 向 Python 发送了更新后的阈值: minThreshold={minThreshold}, maxThreshold={maxThreshold}");
+        Debug.Log($"[UDPReceiver] Sent thresholds to Python: minThreshold={minThreshold}, maxThreshold={maxThreshold}");
     }
 
-    // 监听场景加载
+    // Scene load handler
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         TryFindPlayerRigidbody();
@@ -189,7 +224,7 @@ public class UDPReceiver : MonoBehaviour
 
     private void TryFindPlayerRigidbody()
     {
-        // 通过标签查找玩家 GameObject，然后获取 Rigidbody2D
+        // Find GameObject by tag and get Rigidbody2D
         GameObject player = GameObject.FindGameObjectWithTag("Player");
 
         if (player != null)
@@ -198,27 +233,27 @@ public class UDPReceiver : MonoBehaviour
 
             if (playerRigidbody != null)
             {
-                Debug.Log("[UDPReceiver] Player Rigidbody 重新绑定成功！");
+                Debug.Log("[UDPReceiver] Player Rigidbody successfully bound.");
             }
             else
             {
-                Debug.LogWarning("[UDPReceiver] 玩家对象存在，但缺少 Rigidbody2D 组件！");
+                Debug.LogWarning("[UDPReceiver] Player exists but missing Rigidbody2D component.");
             }
         }
         else
         {
-            Debug.LogWarning("[UDPReceiver] 未找到带有 'Player' 标签的 GameObject！");
+            Debug.LogWarning("[UDPReceiver] GameObject with 'Player' tag not found.");
         }
     }
 
-    // 释放 UDP 资源
+    // Release UDP resources
     public void ReleaseUDPResources()
     {
         if (udpClient != null)
         {
             udpClient.Close();
             udpClient = null;
-            Debug.Log("[UDPReceiver] UDP 客户端已关闭，并释放端口。");
+            Debug.Log("[UDPReceiver] UDP client closed and port released.");
         }
     }
 

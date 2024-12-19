@@ -3131,7 +3131,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &663235215
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3631,8 +3631,8 @@ Transform:
   m_GameObject: {fileID: 711467210}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.786797, y: 4.789284, z: -10.842585}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 18.786797, y: 29.7, z: -10.842585}
+  m_LocalScale: {x: 1, y: 5.4375, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -5384,9 +5384,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f72c31f6a32f16841a3bb3014be0b73b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDonDestroyOnLoad: 1
   port: 65432
   playerRigidbody: {fileID: 779897935}
   baseJumpForce: 15
+  isTutorialStage: 0
 --- !u!4 &1163978858
 Transform:
   m_ObjectHideFlags: 0
@@ -6575,7 +6577,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1616829924
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6876,6 +6878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c84138854aa5f8442a0de0dde06802eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasEndedTutorial: 0
 --- !u!61 &1653172545
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6930,8 +6933,8 @@ Transform:
   m_GameObject: {fileID: 1653172543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 69.81, y: 4.68, z: -10.842585}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 17.5, y: 29.590717, z: -10.842585}
+  m_LocalScale: {x: 1, y: 5.4375, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
