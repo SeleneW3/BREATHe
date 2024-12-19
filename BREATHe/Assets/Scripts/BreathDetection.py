@@ -7,6 +7,12 @@ import socket
 import json
 import threading
 
+# 添加以下配置
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']  # Mac系统
+# 或者使用
+# plt.rcParams['font.sans-serif'] = ['SimHei']  # Windows系统
+plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+
 # 音频参数
 CHUNK = 2048
 FORMAT = pyaudio.paFloat32
@@ -32,10 +38,9 @@ smoothed_factors = []  # 滑动窗口存储时间流速因子
 MIN_BREATH_DURATION = 0.5  # 最小呼吸周期为 0.5 秒
 
 # UDP 配置
-HOST = '127.0.0.1'  # 确保与 Unity 的接收端匹配
+HOST = '127.0.0.1'  # localhost
 PORT = 65432
 udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udp_socket.bind((HOST, PORT))
 
 # 初始化 PyAudio
 p = pyaudio.PyAudio()
@@ -50,11 +55,33 @@ stream = p.open(
 # 接收阈值更新信息
 def receive_threshold():
     global THRESHOLD
-    data, addr = udp_socket.recvfrom(1024)
-    message = data.decode('utf-8')
-    threshold_data = json.loads(message)
-    THRESHOLD = threshold_data.get("threshold", 0.001)  # 更新阈值
-    print(f"收到新的阈值: {THRESHOLD}")
+    print("[Threshold Thread] 开始监听阈值更新...")
+    while True:
+        try:
+            data, addr = udp_socket.recvfrom(1024)
+            message = data.decode('utf-8')
+            print(f"[Threshold Thread] 收到原始数据: {message}")
+            
+            threshold_data = json.loads(message)
+            print(f"[Threshold Thread] 解析后的数据: {threshold_data}")
+            
+            if "min_threshold" in threshold_data and "max_threshold" in threshold_data:
+                min_threshold = threshold_data["min_threshold"]
+                max_threshold = threshold_data["max_threshold"]
+                print(f"[Threshold Thread] 更新阈值 - 最小值: {min_threshold:.6f}, 最大值: {max_threshold:.6f}")
+                THRESHOLD = min_threshold
+                MAX_THRESHOLD = max_threshold
+            elif "threshold" in threshold_data:
+                THRESHOLD = threshold_data.get("threshold", 0.001)
+                print(f"[Threshold Thread] 更新单一阈值: {THRESHOLD:.6f}")
+            else:
+                print(f"[Threshold Thread] 警告：收到未知格式的阈值数据")
+                
+        except json.JSONDecodeError as e:
+            print(f"[Threshold Thread] JSON解析错误: {e}")
+        except Exception as e:
+            print(f"[Threshold Thread] 接收阈值时发生错误: {e}")
+            time.sleep(1)  # 发生错误时等待一秒再继续
 
 # 初始化绘图
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 6))
@@ -129,8 +156,13 @@ def update(frame):
                     'time': current_time,
                     'intensity': intensity,
                     'time_scale': smoothed_time_scale
-                }
-                udp_socket.sendto(json.dumps(data_to_send).encode(), (HOST, PORT))
+                } 
+                try:
+                    udp_socket.sendto(json.dumps(data_to_send).encode(), (HOST, PORT))
+                    #print(f"发送数据包到 Unity: {data_to_send}")
+                except Exception as e:
+                    #print(f"发送数据时出错: {e}")
+                    pass
 
             last_time = current_time
     else:
@@ -162,12 +194,12 @@ def update(frame):
     ax2.set_xlim(max(0, current_time - 10), current_time + 0.5)  # 显示最近10秒
     ax2.set_ylim(0, max(0.1, max(intensities) * 1.2))
 
-    last_intensity = intensity  # 更新最后的强度值
+    last_intensity = intensity  # 更新最后的强度
 
     return line1, line2
 
 # 动画
-ani = FuncAnimation(fig, update, interval=10)
+ani = FuncAnimation(fig, update, interval=10, cache_frame_data=False)
 
 # 接收阈值更新的线程
 threshold_thread = threading.Thread(target=receive_threshold)

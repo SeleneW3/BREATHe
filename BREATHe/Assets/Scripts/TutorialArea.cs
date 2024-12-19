@@ -2,21 +2,23 @@ using UnityEngine;
 
 public class TutorialArea : MonoBehaviour
 {
-    private bool hasEndedTutorial = false; // 添加一个标志位
+    public bool hasEndedTutorial = false; // 锟斤拷锟斤拷一锟斤拷锟斤拷志位
 
-    // 当玩家进入这个区域时触发
+    // 锟斤拷锟斤拷医锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷时锟斤拷锟斤拷
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 检查进入的对象是否是玩家
+        Debug.Log("TutorialArea: OnTriggerEnter2D");
+        Debug.Log("TutorialArea: other.CompareTag(Player): " + other.CompareTag("Player"));
+        // 锟斤拷锟斤拷锟斤拷亩锟斤拷锟斤拷欠锟斤拷锟斤拷锟斤拷
         if (other.CompareTag("Player"))
         {
-            // 输出日志，表示玩家进入了新手引导区域
-            Debug.Log("[TutorialArea] 玩家已进入新手引导区域，结束新手引导。");
+            // 锟斤拷锟斤拷锟街撅拷锟斤拷锟绞撅拷锟揭斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+            Debug.Log("[TutorialArea] EXIT TUTORIAL");
 
-            // 调用 UDPReceiver 中的 EndTutorial 方法，结束新手引导
+            // 锟斤拷锟斤拷 UDPReceiver 锟叫碉拷 EndTutorial 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
             UDPReceiver.Instance.EndTutorial();
 
-            // 设置标志位，确保只调用一次
+            // 锟斤拷锟矫憋拷志位锟斤拷确锟斤拷只锟斤拷锟斤拷一锟斤拷
             hasEndedTutorial = true;
         }
     }
