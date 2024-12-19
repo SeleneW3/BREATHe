@@ -1,0 +1,18 @@
+# Ignore unnecessary files 
+
+# Visual Studio 临时文件和缓存
+*.vsidx
+.vs/
+
+# Python 构建文件和临时文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.spec
+build/
+dist/
+tempCodeRunnerFile.py
+
+# 忽略其他不必要的文件夹
+
