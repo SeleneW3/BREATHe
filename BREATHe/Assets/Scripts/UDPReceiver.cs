@@ -14,6 +14,7 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
     private IPEndPoint remoteEndPoint;
 
     public Rigidbody2D playerRigidbody;   // Player's Rigidbody2D component
+    public GameObject player;
     public float baseJumpForce = 15.0f;    // Base jump force
     private float adjustedJumpForce;       // Dynamically adjusted jump force
     private float gravityScale = 1.0f;     // Gravity scale
@@ -22,6 +23,8 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
     private float recoveryRate = 0.1f;     // Recovery rate
 
     private UIManager uiManager;
+    // 引入 PlayerAnimationEffect 脚本
+    public PlayerAnimationEffect playerAnimationEffect;  // 在脚本中引用呼吸灯效果
 
     // Tutorial stage parameters
     [SerializeField]private bool isTutorialStage = false;  // Default not in tutorial stage
@@ -33,17 +36,16 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
     void Start()
     {
         InitializeUDP();
-        SceneManager.sceneLoaded += OnSceneLoaded;
 
         uiManager = FindObjectOfType<UIManager>();
-        TryFindPlayerRigidbody();
+        //playerRigidbody = player.gameObject.GetComponent<Rigidbody2D>();
 
-        // Auto-start tutorial
-        StartTutorial();
     }
 
     void Update()
     {
+        playerRigidbody = PlayerManager.Instance.GetComponent<Rigidbody2D>();
+
         timeScaleUpdated = false;
 
         if (udpClient == null)
@@ -179,6 +181,12 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
         {
             playerRigidbody.velocity = new Vector2(playerRigidbody.velocity.x, adjustedJumpForce);
             Debug.Log("[UDPReceiver] Player Jump Triggered!");
+
+            // 调用呼吸灯效果
+            if (playerAnimationEffect != null)
+            {
+
+            }
         }
         else
         {
@@ -216,35 +224,7 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
         Debug.Log($"[UDPReceiver] Sent thresholds to Python: minThreshold={minThreshold}, maxThreshold={maxThreshold}");
     }
 
-    // Scene load handler
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        TryFindPlayerRigidbody();
-    }
 
-    private void TryFindPlayerRigidbody()
-    {
-        // Find GameObject by tag and get Rigidbody2D
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-        if (player != null)
-        {
-            playerRigidbody = player.GetComponent<Rigidbody2D>();
-
-            if (playerRigidbody != null)
-            {
-                Debug.Log("[UDPReceiver] Player Rigidbody successfully bound.");
-            }
-            else
-            {
-                Debug.LogWarning("[UDPReceiver] Player exists but missing Rigidbody2D component.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("[UDPReceiver] GameObject with 'Player' tag not found.");
-        }
-    }
 
     // Release UDP resources
     public void ReleaseUDPResources()
@@ -264,7 +244,6 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
 
     void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
         ReleaseUDPResources();
     }
 

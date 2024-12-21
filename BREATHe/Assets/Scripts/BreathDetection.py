@@ -8,9 +8,9 @@ import json
 import threading
 
 # 添加以下配置
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']  # Mac系统
+#plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']  # Mac系统
 # 或者使用
-# plt.rcParams['font.sans-serif'] = ['SimHei']  # Windows系统
+plt.rcParams['font.sans-serif'] = ['SimHei']  # Windows系统
 plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 # 音频参数
@@ -20,7 +20,7 @@ CHANNELS = 1
 RATE = 44100
 
 # 呼吸检测参数
-THRESHOLD = 0.001        # 初始阈值
+THRESHOLD = 0.003        # 初始阈值
 MAX_THRESHOLD = 0.05     # 呼吸的最高强度阈值
 LOW_THRESHOLD_FACTOR = 0.3  # 呼吸结束的低强度阈值占比
 is_above_threshold = False  # 标记是否处于呼吸周期
@@ -35,7 +35,7 @@ WINDOW_SIZE = 5
 smoothed_factors = []  # 滑动窗口存储时间流速因子
 
 # 最小呼吸持续时间
-MIN_BREATH_DURATION = 0.5  # 最小呼吸周期为 0.5 秒
+MIN_BREATH_DURATION = 0.15  # 最小呼吸周期为 0.5 秒
 
 # UDP 配置
 HOST = '127.0.0.1'  # localhost

@@ -2,11 +2,13 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    private bool isDead = false; // Íæ¼ÒÊÇ·ñËÀÍö
-    public static PlayerManager Instance; // µ¥ÀıÄ£Ê½
+    private bool isDead = false; 
+    public static PlayerManager Instance;
 
-    private UIManager uiManager; // ÒıÓÃ UIManager
-    public float moveSpeed = 5f; // ½ÇÉ«µÄ×Ô¶¯Ç°½øËÙ¶È
+    private UIManager uiManager; 
+    public float moveSpeed = 5f;
+
+    Vector3 initialTransform;
 
     private void Awake()
     {
@@ -17,16 +19,18 @@ public class PlayerManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            Debug.LogWarning("destroy!");
         }
+
     }
 
     private void Start()
     {
-        // ²éÕÒ UIManager
         uiManager = FindObjectOfType<UIManager>();
+        initialTransform = gameObject.transform.position;
         if (uiManager == null)
         {
-            Debug.LogError("UIManager Î´ÕÒµ½£¬ÇëÈ·±£³¡¾°ÖĞ´æÔÚ²¢ÕıÈ·ÉèÖÃ£¡");
+            Debug.LogError("UIManager æœªæ‰¾åˆ°ï¼Œè¯·ç¡®ä¿å®ƒå­˜åœ¨å¹¶æ­£ç¡®è®¾ç½®ï¼");
         }
     }
 
@@ -34,77 +38,43 @@ public class PlayerManager : MonoBehaviour
     {
         if (!isDead)
         {
-            // ½ÇÉ«×Ô¶¯ÏòÓÒÇ°½ø
+
             transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
         }
     }
 
     public void TriggerDeath()
     {
-        if (isDead) return; // ·ÀÖ¹ÖØ¸´µ÷ÓÃ
+        if (isDead) return; // é˜²æ­¢é‡å¤æ­»äº¡
         isDead = true;
 
-        Debug.Log("Íæ¼ÒËÀÍö£¬´¥·¢ËÀÍöÂß¼­£¡");
+        Debug.Log("ç©å®¶æ­»äº¡ï¼Œè§¦å‘æ­»äº¡é€»è¾‘");
 
-        // ÏÔÊ¾ÓÎÏ·½áÊø»­Ãæ£¨µÃ·ÖµÈ UI£©
+        // æ˜¾ç¤ºæ¸¸æˆç»“æŸèœå•
         if (uiManager != null)
         {
             uiManager.ShowGameOverMenu();
         }
     }
 
-    private void PauseAndResetScene(float delay)
-    {
-        // ÔİÍ£ÓÎÏ·
-        Time.timeScale = 0f;
 
-        // ÑÓ³Ùµ÷ÓÃÖØÖÃ³¡¾°
-        StartCoroutine(ResetSceneAfterDelay(delay));
-    }
-
-    private System.Collections.IEnumerator ResetSceneAfterDelay(float delay)
-    {
-        yield return new WaitForSecondsRealtime(delay); // µÈ´ıÕæÊµÊ±¼ä
-
-        // »Ö¸´Ê±¼äÁ÷¶¯
-        Time.timeScale = 1f;
-
-        // ÖØÖÃ³¡¾°
-        ResetScene();
-    }
-
-    private void ResetScene()
-    {
-        Debug.Log("ÖØÖÃ³¡¾°£¡");
-
-        // Ö±½ÓÍ¨¹ıµ¥Àıµ÷ÓÃ UDPReceiver µÄ ReleaseUDPResources
-        if (UDPReceiver.Instance != null)
-        {
-            UDPReceiver.Instance.ReleaseUDPResources();
-        }
-
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-        ); // ÖØĞÂ¼ÓÔØµ±Ç°³¡¾°
-    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // ¼ì²âÅö×²¶ÔÏóÊÇ·ñÊÇµØÃæ»òµĞÈË
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log($"Íæ¼ÒÅöµ½ {collision.gameObject.tag}£¬´¥·¢ËÀÍöÂß¼­£¡");
+            Debug.Log($"ä¸ {collision.gameObject.tag} ç¢°æ’ï¼Œè§¦å‘æ­»äº¡é€»è¾‘");
             TriggerDeath();
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public void InitializePos()
     {
-        // ¼ì²â´¥·¢¶ÔÏóÊÇ·ñÊÇµØÃæ»òµĞÈË
-        if (other.CompareTag("Ground") || other.CompareTag("Enemy"))
-        {
-            Debug.Log($"Íæ¼Ò´¥·¢ {other.gameObject.tag}£¬´¥·¢ËÀÍöÂß¼­£¡");
-            TriggerDeath();
-        }
+        gameObject.transform.position = initialTransform;
+    }
+
+    public void respawn()
+    {
+        isDead = false;
     }
 }

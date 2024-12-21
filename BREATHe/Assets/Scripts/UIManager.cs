@@ -26,6 +26,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+
+        UpdateScore(Time.deltaTime);
+    }
+
     // 更新积分显示
     public void UpdateScore(float increment)
     {
@@ -65,6 +71,8 @@ public class UIManager : MonoBehaviour
 
         // 恢复时间流逝
         Time.timeScale = 1f;
+        PlayerManager.Instance.InitializePos();
+        PlayerManager.Instance.respawn();
 
         // 重置场景
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
