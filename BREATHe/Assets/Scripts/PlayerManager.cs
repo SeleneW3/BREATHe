@@ -3,8 +3,9 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerManager : MonoBehaviour
 {
-    private bool isDead = true; 
+    private bool isDead = false; 
     public static PlayerManager Instance;
+    public Rigidbody2D rb;
 
     private UIManager uiManager; 
     public float moveSpeed = 5f;
@@ -35,6 +36,7 @@ public class PlayerManager : MonoBehaviour
         {
             Debug.LogError("UIManager 未找到，请确保它存在并正确设置！");
         }
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -45,8 +47,13 @@ public class PlayerManager : MonoBehaviour
             transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
         }
 
-        light2D.intensity = 0.2f + UDPReceiver.Instance.Intensity * 20;
-        light2D.pointLightOuterRadius = Mathf.Lerp(5f, 13f, UDPReceiver.Instance.Intensity); // 根据呼吸强度动态调整半径
+
+        light2D.intensity = 0.2f + Mathf.Abs(rb.velocity.y) * 0.5f;
+        light2D.pointLightOuterRadius = Mathf.Lerp(5f, 25f, UDPReceiver.Instance.Intensity); // 根据呼吸强度动态调整半径
+
+        rb.AddForce(Vector2.up * UDPReceiver.Instance.Intensity * 10); // 根据呼吸强度动态调整跳跃力度
+
+        
     }
 
         public void TriggerDeath()

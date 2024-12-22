@@ -57,16 +57,6 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
                     var parsedData = JsonUtility.FromJson<BreathData>(jsonData);
                     Debug.LogWarning($"[UDPReceiver] Parsed data -> intensity: {parsedData.intensity}");
                     Intensity = parsedData.intensity;
-
-                    if (isMeasuring&&parsedData.intensity>0)
-                    {
-                        intensityValues.Add(parsedData.intensity);
-                    }
-                    else
-                    {
-                        isMeasuring = false;
-                        averageIntensity = CalculateAverageIntensity(intensityValues);
-                    }
                     
 
                     lastTimeScale = parsedData.time_scale;
@@ -90,10 +80,16 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
             Debug.LogError($"[UDPReceiver] Unexpected error: {e.Message}");
         }
 
-        if (!timeScaleUpdated)
+        if (isMeasuring && Intensity > 0)
         {
-            lastTimeScale = Mathf.MoveTowards(lastTimeScale, 5.0f, recoveryRate * Time.deltaTime);
+            intensityValues.Add(Intensity);
         }
+        else
+        {
+            isMeasuring = false;
+            averageIntensity = CalculateAverageIntensity(intensityValues);
+        }
+
     }
 
     private void InitializeUDP()
