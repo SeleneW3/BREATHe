@@ -127,9 +127,6 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
     }
 
 
-
-
-
     public void ReleaseUDPResources()
     {
         if (udpClient != null)
