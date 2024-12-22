@@ -21,7 +21,7 @@ RATE = 44100
 
 # 呼吸检测参数
 THRESHOLD = 0.005        # 初始阈值
-MAX_THRESHOLD = 1     # 呼吸的最高强度阈值
+MAX_THRESHOLD = 0.2     # 呼吸的最高强度阈值
 LOW_THRESHOLD_FACTOR = 0.3  # 呼吸结束的低强度阈值占比
 is_above_threshold = False  # 标记是否处于呼吸周期
 
@@ -77,8 +77,8 @@ def receive_threshold():
             else:
                 print(f"[Threshold Thread] 警告：收到未知格式的阈值数据")
                 
-        except json.JSONDecodeError as e:
-            print(f"[Threshold Thread] JSON解析错误: {e}")
+        #except json.JSONDecodeError as e:
+            #print(f"[Threshold Thread] JSON解析错误: {e}")
         except Exception as e:
             print(f"[Threshold Thread] 接收阈值时发生错误: {e}")
             time.sleep(1)  # 发生错误时等待一秒再继续
