@@ -45,10 +45,11 @@ public class PlayerManager : MonoBehaviour
             transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
         }
 
-        light2D.intensity = 0.2f + UDPReceiver.Instance.Intensity*10;
+        light2D.intensity = 0.2f + UDPReceiver.Instance.Intensity * 20;
+        light2D.pointLightOuterRadius = Mathf.Lerp(5f, 13f, UDPReceiver.Instance.Intensity); // 根据呼吸强度动态调整半径
     }
 
-    public void TriggerDeath()
+        public void TriggerDeath()
     {
         if (isDead) return; // 防止重复死亡
         isDead = true;
@@ -61,8 +62,6 @@ public class PlayerManager : MonoBehaviour
             uiManager.ShowGameOverMenu();
         }
     }
-
-
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
