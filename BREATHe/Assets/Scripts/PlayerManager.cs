@@ -49,7 +49,7 @@ public class PlayerManager : MonoBehaviour
 
 
         light2D.intensity = 0.2f + Mathf.Abs(rb.velocity.y) * 0.5f;
-        light2D.pointLightOuterRadius = Mathf.Lerp(5f, 25f, UDPReceiver.Instance.Intensity); // 根据呼吸强度动态调整半径
+        light2D.pointLightOuterRadius = 2f + UDPReceiver.Instance.Intensity * 20f;
 
         rb.AddForce(Vector2.up * UDPReceiver.Instance.Intensity * 10); // 根据呼吸强度动态调整跳跃力度
 
