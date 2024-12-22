@@ -1,14 +1,17 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerManager : MonoBehaviour
 {
-    private bool isDead = false; 
+    private bool isDead = true; 
     public static PlayerManager Instance;
 
     private UIManager uiManager; 
     public float moveSpeed = 5f;
 
     Vector3 initialTransform;
+
+    public Light2D light2D;
 
     private void Awake()
     {
@@ -41,6 +44,8 @@ public class PlayerManager : MonoBehaviour
 
             transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
         }
+
+        light2D.intensity = 0.2f + UDPReceiver.Instance.Intensity*10;
     }
 
     public void TriggerDeath()

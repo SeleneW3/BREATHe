@@ -16,7 +16,6 @@ public class TutorialArea : MonoBehaviour
             Debug.Log("[TutorialArea] EXIT TUTORIAL");
 
             // ���� UDPReceiver �е� EndTutorial ������������������
-            UDPReceiver.Instance.EndTutorial();
 
             // ���ñ�־λ��ȷ��ֻ����һ��
             hasEndedTutorial = true;
