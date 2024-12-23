@@ -12,19 +12,14 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
     public int port = 65432; // Default port
     public float averageIntensity = 0f;
     public float Intensity = 0f;
+    public float frequency = 0f;
 
     private UdpClient udpClient;
     private IPEndPoint remoteEndPoint;
 
-    private float lastTimeScale = 5.0f;    // Time scale
-    private bool timeScaleUpdated = false;
-    private float recoveryRate = 0.1f;     // Recovery rate
-
     private List<float> intensityValues = new List<float>();
     public bool isMeasuring = false;
     
-
-
     void Start()
     {
         InitializeUDP();
@@ -32,10 +27,6 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
 
     void Update()
     {
-
-        timeScaleUpdated = false;
-
-
 
         if (udpClient == null)
         {
@@ -45,8 +36,7 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
         }
 
         try 
-        {
-            
+        {    
             if (udpClient.Available > 0)
             {
                 try
@@ -56,12 +46,9 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
 
                     var parsedData = JsonUtility.FromJson<BreathData>(jsonData);
                     Debug.LogWarning($"[UDPReceiver] Parsed data -> intensity: {parsedData.intensity}");
-                    Intensity = parsedData.intensity;
                     
-
-                    lastTimeScale = parsedData.time_scale;
-                    timeScaleUpdated = true;
-
+                    Intensity = parsedData.intensity;
+                    frequency = parsedData.frequency;
                 }
                 catch (System.Exception e)
                 {
@@ -89,7 +76,6 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
             isMeasuring = false;
             averageIntensity = CalculateAverageIntensity(intensityValues);
         }
-
     }
 
     private void InitializeUDP()
@@ -166,6 +152,6 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
     {
         public float time;
         public float intensity;
-        public float time_scale;
+        public float frequency;
     }
 }
