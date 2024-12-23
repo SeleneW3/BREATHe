@@ -14,7 +14,7 @@ public class PlayerManager : MonoBehaviour
 
     public Light2D light2D;
 
-    public float bounceStrength = 50f;
+    public float bounceStrength = 5f;
     public float bounceDamping = 0.5f; // 反弹衰减 (控制反弹后速度逐渐减小)
 
     private void Awake()
@@ -74,11 +74,42 @@ public class PlayerManager : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            Vector2 bounceForce = Vector2.up * bounceStrength;
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * bounceDamping); 
+            Vector2 normal = collision.GetContact(0).normal;
 
-            rb.AddForce(bounceForce, ForceMode2D.Impulse);
-            Debug.Log("与地面碰撞，触发反弹!");
+            float minAngle = 0f;
+            float maxAngle = 0f;
+
+            if (normal.y > 0)
+            {
+                minAngle = 210f;
+                maxAngle = 330f;
+            }
+
+            else if (normal.y < 0)
+            {
+                minAngle = -60f;
+                maxAngle = 60f;
+            }
+
+            // 随机生成一个角度，并转化为弧度
+            float randomAngle = Random.Range(minAngle, maxAngle) * Mathf.Deg2Rad;
+
+            // 计算反弹方向
+            Vector2 bounceDirection = new Vector2(Mathf.Cos(randomAngle), Mathf.Sin(randomAngle));
+
+            // 计算反弹力，并应用到刚体
+            Vector2 bounceForce = bounceDirection * bounceStrength;
+
+            // 先衰减垂直速度（避免跳跃过大）
+            rb.velocity = new Vector2(rb.velocity.x * bounceDamping, rb.velocity.y);
+
+            // 停止水平运动
+            rb.velocity = new Vector2(0f, rb.velocity.y);  // 停止水平移动速度
+
+            // 对刚体施加反弹力
+            rb.AddForce(bounceForce, ForceMode2D.Impulse); // 施加反弹力
+
+            Debug.Log("与地面碰撞，触发随机反弹!");
         }
 
         if (collision.gameObject.CompareTag("Enemy"))
