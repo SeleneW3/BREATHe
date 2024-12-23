@@ -3707,6 +3707,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3b0849e99433ab41a6c8f63963f71ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rb: {fileID: 779897935}
   moveSpeed: 5
   light2D: {fileID: 592294294}
 --- !u!1 &780019882
