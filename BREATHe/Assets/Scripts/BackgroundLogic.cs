@@ -13,6 +13,7 @@ public class BackgroundLogic : MonoBehaviour
     private Color colorMax = new Color(0.231f, 0.251f, 0.298f); // 3B404C
 
     private Camera mainCamera;
+    
     void Start()
     {
         mainCamera = Camera.main;

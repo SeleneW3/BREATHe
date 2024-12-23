@@ -45,7 +45,7 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
                     string jsonData = Encoding.UTF8.GetString(data);
 
                     var parsedData = JsonUtility.FromJson<BreathData>(jsonData);
-                    Debug.LogWarning($"[UDPReceiver] Parsed data -> intensity: {parsedData.intensity}");
+                    Debug.LogWarning($"[UDPReceiver] Parsed data -> intensity: {parsedData.intensity},frequency: {parsedData.frequency}");
                     
                     Intensity = parsedData.intensity;
                     frequency = parsedData.frequency;
