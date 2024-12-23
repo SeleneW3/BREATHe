@@ -42,6 +42,13 @@ public class PlayerManager : MonoBehaviour
             Debug.LogError("UIManager 未找到，请确保它存在并正确设置！");
         }
         rb = GetComponent<Rigidbody2D>();
+
+        // 确保有碰撞器
+        var collider = GetComponent<Collider2D>();
+        if (collider == null)
+        {
+            Debug.LogError("Player 缺少 Collider2D 组件！");
+        }
     }
 
     private void Update()
@@ -114,7 +121,7 @@ public class PlayerManager : MonoBehaviour
             rb.velocity = new Vector2(0f, rb.velocity.y);  // 停止水平移动速度
 
             // 对刚体施加反弹力
-            rb.AddForce(bounceForce, ForceMode2D.Impulse); // 施加反弹力
+            // rb.AddForce(bounceForce, ForceMode2D.Impulse); // 施加反弹力
 
             Debug.Log("与地面碰撞，触发随机反弹!");
         }

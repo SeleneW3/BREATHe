@@ -1,56 +1,75 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HoleBreath : MonoBehaviour
 {
-    public float maxAttractionStrength = 10f;  // ×îÇ¿ÎüÒıÁ¦
-    public float maxAttractionDistance = 5f;  // ×î´óÎüÒı·¶Î§
-    private Transform player;
+    public float maxAttractionStrength = 10f;  // å¸å¼•åŠ›
+    public CircleCollider2D attractionArea;    // å¸å¼•èŒƒå›´çš„ç¢°æ’å™¨
+    public Transform player;
     private bool isPlayerInRange = false;
 
     public ParticleSystem attractionParticles;
+
     void Start()
     {
         attractionParticles.Play();
+        if (attractionArea == null)
+        {
+            Debug.LogError("å¸å¼•èŒƒå›´ç¢°æ’å™¨æœªè®¾ç½®ï¼è¯·åœ¨æ£€æŸ¥å™¨ä¸­è®¾ç½® Attraction Area");
+        }
     }
 
     private void Update()
     {
-        if (isPlayerInRange && player != null)
+        if (isPlayerInRange && player != null && attractionArea != null)
         {
-            Vector3 direction = (transform.position - player.position).normalized;
+            // åªè®¡ç®—ç«–ç›´æ–¹å‘çš„ä½ç½®å·®
+            float verticalDifference = transform.position.y - player.position.y;
+            float distance = Mathf.Abs(verticalDifference);
 
-            float distance = Vector3.Distance(player.position, transform.position);
-
-            // ¼ÆËãÎüÒıÁ¦Ç¿¶È£¬¾àÀëÔ½½ü£¬ÎüÒıÁ¦Ô½Ç¿
-            float attractionStrength = Mathf.Lerp(0, maxAttractionStrength, 1 - (distance / maxAttractionDistance));
-
-            // ·ÀÖ¹ÎüÒıÁ¦±äÎª¸ºÖµ
-            attractionStrength = Mathf.Max(attractionStrength, 0);
-
-            // ¸ù¾İÎüÒıÁ¦Ç¿¶È½«Íæ¼ÒÀ­ÏòºÚ¶´
-            player.position = Vector3.MoveTowards(player.position, transform.position, attractionStrength * Time.deltaTime);
+            // ä½¿ç”¨æŒ‡å®šç¢°æ’å™¨çš„åŠå¾„ä½œä¸ºæœ€å¤§è·ç¦»
+            float attractionRadius = attractionArea.radius;
+            
+            // è®¡ç®—å¸å¼•åŠ›
+            float attractionStrength = maxAttractionStrength;
+            
+            // åªåœ¨ç«–ç›´æ–¹å‘ç§»åŠ¨
+            Vector3 newPosition = player.position;
+            newPosition.y = Mathf.MoveTowards(
+                player.position.y, 
+                transform.position.y, 
+                attractionStrength * Time.deltaTime
+            );
+            
+            // ä¿æŒxä½ç½®ä¸å˜ï¼Œåªæ›´æ–°yä½ç½®
+            player.position = newPosition;
         }
     }
 
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.CompareTag("Player"))
-            {
-                player = other.transform;
-                isPlayerInRange = true;
-                Debug.Log("Íæ¼Ò½øÈëÎüÒı·¶Î§");
-            }
-        }
+    // æ–°å¢è¿™ä¸¤ä¸ªæ–¹æ³•ä¾› AttractionTrigger è°ƒç”¨
+    public void OnPlayerEnterRange(Transform playerTransform)
+    {
+        player = playerTransform;
+        isPlayerInRange = true;
+        Debug.Log("ç©å®¶è¿›å…¥å¸å¼•èŒƒå›´");
+    }
 
-        private void OnTriggerExit(Collider other)
+    public void OnPlayerExitRange()
+    {
+        player = null;
+        isPlayerInRange = false;
+        Debug.Log("ç©å®¶ç¦»å¼€å¸å¼•èŒƒå›´");
+    }
+
+    private void OnValidate()
+    {
+        // åœ¨ç¼–è¾‘å™¨ä¸­éªŒè¯ç¢°æ’å™¨è®¾ç½®
+        if (attractionArea != null)
         {
-            if (other.CompareTag("Player"))
+            if (!attractionArea.isTrigger)
             {
-                player = null;
-                isPlayerInRange = false;
-                Debug.Log("Íæ¼ÒÀë¿ªÎüÒı·¶Î§");
+                Debug.LogWarning("Attraction Area çš„ Is Trigger å±æ€§æœªå¯ç”¨ï¼");
+                attractionArea.isTrigger = true;
             }
         }
     }
+}
