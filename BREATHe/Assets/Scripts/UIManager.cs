@@ -36,16 +36,16 @@ public class UIManager : MonoBehaviour
     public void UpdateScore(float increment)
     {
         score += increment;
-        Debug.Log($"[UIManager] Score updated: {score}"); // 添加日志
+        //Debug.Log($"[UIManager] Score updated: {score}"); // 添加日志
 
         if (scoreText != null)
         {
             scoreText.text = $"{score:F1} M"; // 显示为 xx.x M
-            Debug.Log("[UIManager] Score text updated.");
+            //Debug.Log("[UIManager] Score text updated.");
         }
         else
         {
-            Debug.LogWarning("[UIManager] scoreText 未设置，请检查引用。");
+            //Debug.LogWarning("[UIManager] scoreText 未设置，请检查引用。");
         }
     }
 
@@ -55,6 +55,11 @@ public class UIManager : MonoBehaviour
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);  // 显示游戏结束面板
+        }
+
+        if (gameOverText != null)
+        {
+            gameOverText.text = $"{score:F1} M"; // 显示得分
         }
 
         // 暂停游戏时间
