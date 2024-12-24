@@ -57,6 +57,7 @@ def receive_threshold():
             threshold_data = json.loads(message)
             print(f"[Threshold Thread] 解析后的数据: {threshold_data}")
             
+            #动态调整阈值
             if "min_threshold" in threshold_data and "max_threshold" in threshold_data:
                 min_threshold = threshold_data["min_threshold"]
                 max_threshold = threshold_data["max_threshold"]
@@ -70,7 +71,7 @@ def receive_threshold():
                 print(f"[Threshold Thread] 警告：收到未知格式的阈值数据")
                 
         #except json.JSONDecodeError as e:
-            #print(f"[Threshold Thread] JSON解析错误: {e}")
+            #print(f"[Threshold Thread] JSON解���错误: {e}")
         except Exception as e:
             print(f"[Threshold Thread] 接收阈值时发生错误: {e}")
             time.sleep(1)  # 发生错误时等待一秒再继续
@@ -107,7 +108,7 @@ print("开始检测呼吸...")
 # 更新函数
 def update(frame):
     global is_above_threshold, last_time, last_intensity, breath_start_intensity, smoothed_factors, breath_start_time
-    global breath_end_time, breath_count, breath_frequency
+    global breath_end_time, breath_count, frequency
 
     # 读取音频数据
     data = stream.read(CHUNK, exception_on_overflow=False)
@@ -153,14 +154,14 @@ def update(frame):
                 print(f"⚠️ 呼吸周期过短，忽略：{breath_duration:.2f} 秒")
             else:
                 breath_count += 1
-                breath_frequency = breath_count / (current_time / 60)
-                print(f"🔵 呼吸结束！持续时间: {breath_duration:.2f} 秒, 呼吸频率: {breath_frequency:.2f} 次/分钟")
+                frequency = breath_count / (current_time / 60)  # 计算呼吸频率
+                print(f"🔵 呼吸结束！持续时间: {breath_duration:.2f} 秒, 呼吸频率: {frequency:.2f} 次/分钟")
 
                 # 发送结束事件到 Unity
                 data_to_send = {
                     'time': current_time,
                     'breath_duration': breath_duration,
-                    'breath_frequency': breath_frequency
+                    'frequency': frequency  # 确保发送频率数据
                 }
                 udp_socket.sendto(json.dumps(data_to_send).encode(), (HOST, PORT))
 
