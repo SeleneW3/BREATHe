@@ -21,8 +21,8 @@ RATE = 44100
 
 # 呼吸检测参数
 breath_count = 0  # 呼吸次数
-THRESHOLD = 0.005        # 初始阈值
-MAX_THRESHOLD = 1     # 呼吸的最高强度阈值
+THRESHOLD = 0.0005        # 初始阈值
+MAX_THRESHOLD = 0.05     # 呼吸的最高强度阈值
 LOW_THRESHOLD_FACTOR = 0.3  # 呼吸结束的低强度阈值占比
 is_above_threshold = False  # 标记是否处于呼吸周期
 
@@ -43,6 +43,9 @@ stream = p.open(
     input=True,
     frames_per_buffer=CHUNK
 )
+
+# 用于存储呼吸事件的时间戳
+breath_events = []
 
 # 接收阈值更新信息
 def receive_threshold():
@@ -109,6 +112,7 @@ print("开始检测呼吸...")
 def update(frame):
     global is_above_threshold, last_time, last_intensity, breath_start_intensity, smoothed_factors, breath_start_time
     global breath_end_time, breath_count, frequency
+    global breath_events  # 确保 breath_events 被声明为全局变量
 
     # 读取音频数据
     data = stream.read(CHUNK, exception_on_overflow=False)
@@ -121,27 +125,28 @@ def update(frame):
     ax1.set_ylim(audio_data.min() * 1.1, audio_data.max() * 1.1)
 
     # 呼吸检测逻辑
-    if THRESHOLD < intensity < MAX_THRESHOLD:  # 添加最大阈值过滤
+    if THRESHOLD < intensity < MAX_THRESHOLD:
         if not is_above_threshold:
             # 检测到呼吸开始
             is_above_threshold = True
-            breath_start_time = current_time  # 记录呼吸开始时间
+            breath_start_time = current_time
             breath_start_intensity = intensity
-            last_time = current_time  # 重置起始时间为当前时间
+            last_time = current_time
             print(f"🔴 呼吸开始！时间: {current_time:.2f} 秒, 强度: {intensity:.4f}")
         else:
+            print(f"📊 实时强度: {intensity:.4f}")
             
-                # 发送数据到 Unity
-                data_to_send = {
-                    'time': current_time,
-                    'intensity': intensity,
-                } 
-                try:
-                    udp_socket.sendto(json.dumps(data_to_send).encode(), (HOST, PORT))
-                    #print(f"发送数据包到 Unity: {data_to_send}")
-                except Exception as e:
-                    #print(f"发送数据时出错: {e}")
-                    pass
+            # 发送数据到 Unity
+            data_to_send = {
+                'time': current_time,
+                'intensity': intensity,
+            }
+            try:
+                udp_socket.sendto(json.dumps(data_to_send).encode(), (HOST, PORT))
+                #print(f"发送数据包到 Unity: {data_to_send}")
+            except Exception as e:
+                #print(f"发送数据时出错: {e}")
+                pass
 
     else:
         if is_above_threshold and intensity < breath_start_intensity * LOW_THRESHOLD_FACTOR:
@@ -154,8 +159,14 @@ def update(frame):
                 print(f"⚠️ 呼吸周期过短，忽略：{breath_duration:.2f} 秒")
             else:
                 breath_count += 1
-                frequency = breath_count / (current_time / 60)  # 计算呼吸频率
-                print(f"🔵 呼吸结束！持续时间: {breath_duration:.2f} 秒, 呼吸频率: {frequency:.2f} 次/分钟")
+                breath_events.append(current_time)  # 记录呼吸事件的时间戳
+
+                # 移除超过10秒的旧事件
+                breath_events = [t for t in breath_events if current_time - t <= 10]
+
+                # 计算过去10秒的呼吸次数
+                frequency = len(breath_events)
+                print(f"🔵 呼吸结束！持续时间: {breath_duration:.2f} 秒, 过去10秒呼吸次数: {frequency} 次")
 
                 # 发送结束事件到 Unity
                 data_to_send = {
