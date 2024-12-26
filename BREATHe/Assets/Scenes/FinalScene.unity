@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1516,7 +1515,7 @@ Transform:
   m_GameObject: {fileID: 390188523}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 23.37, y: -3.88, z: 0.10938007}
+  m_LocalPosition: {x: 23.37, y: 2.76, z: 0.10938007}
   m_LocalScale: {x: 1.0884, y: 1.0884, z: 1.0884}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2446,12 +2445,12 @@ MonoBehaviour:
   m_RequiresColorTexture: 0
   m_Version: 2
   m_TaaSettings:
-    quality: 3
-    frameInfluence: 0.1
-    jitterScale: 1
-    mipBias: 0
-    varianceClampScale: 0.9
-    contrastAdaptiveSharpening: 0
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!1 &544010766
 GameObject:
   m_ObjectHideFlags: 0
@@ -3701,7 +3700,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.4
+  m_Mass: 0.22
   m_LinearDrag: 1
   m_AngularDrag: 0.05
   m_GravityScale: 0.5
@@ -3750,7 +3749,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.8
 --- !u!212 &779897937
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3812,7 +3811,7 @@ Transform:
   m_GameObject: {fileID: 779897934}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.3, y: -0.27, z: 0}
+  m_LocalPosition: {x: -1, y: -0.27, z: 0}
   m_LocalScale: {x: 1.277, y: 1.277, z: 1.277}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3833,9 +3832,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDead: 0
   rb: {fileID: 779897935}
-  moveSpeed: 5
+  moveSpeed: 3
   light2D: {fileID: 592294294}
   spriteRenderer: {fileID: 779897937}
+  isCalibrating: 0
+  minBreathForce: 2
+  maxBreathForce: 10
+  recordedMinIntensity: 3.4028235e+38
+  recordedMaxIntensity: -3.4028235e+38
 --- !u!1 &780019882
 GameObject:
   m_ObjectHideFlags: 0
@@ -5522,10 +5526,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDonDestroyOnLoad: 1
   port: 65432
-  averageIntensity: 0
-  Intensity: 0
+  intensity: 0
   frequency: 0
+  breathDuration: 0
+  averageIntensity: 0
   isMeasuring: 0
+  lastMaxIntensity: 0
+  lastMinIntensity: 0
+  isBreathing: 0
+  breathCount: 0
 --- !u!4 &1163978858
 Transform:
   m_ObjectHideFlags: 0
@@ -7156,7 +7165,7 @@ GameObject:
   - component: {fileID: 1653172545}
   - component: {fileID: 1653172544}
   m_Layer: 0
-  m_Name: TutorialExitTrigger
+  m_Name: TutorialArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7207,7 +7216,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -2.3854675, y: -4.7645054}
+  m_Offset: {x: 3.038311, y: -4.7645054}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -7218,7 +7227,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.2386208, y: 15.047077}
+  m_Size: {x: 39.802704, y: 15.047077}
   m_EdgeRadius: 0
 --- !u!4 &1653172546
 Transform:
@@ -8235,7 +8244,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2054663259
 Transform:
   m_ObjectHideFlags: 0
