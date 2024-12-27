@@ -24,7 +24,7 @@ public class BackgroundLogic : MonoBehaviour
     {
         gameObject.transform.position = playerTransform.position;
 
-        float frequency = UDPReceiver.Instance.frequency;
+        float frequency = UDPReceiver.Instance.Frequency;
 
         float t = Mathf.InverseLerp(minFrequency, maxFrequency, frequency);
         Color color = Color.Lerp(colorMin, colorMax, t);
