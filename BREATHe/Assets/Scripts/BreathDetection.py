@@ -12,11 +12,10 @@ import tkinter as tk
 from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-# 添加以下配置
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']  # Mac系统
-# 或者使用
-#plt.rcParams['font.sans-serif'] = ['SimHei']  # Windows系统
+# 修改字体配置
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'DejaVu Sans', 'Bitstream Vera Sans', 'sans-serif']  # 添加多个备选字体
 plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+plt.rcParams['font.family'] = 'sans-serif'  # 设置字体族
 
 # 音频参数
 CHUNK = 2048
@@ -226,7 +225,7 @@ def update_threshold(var_name, value):
     elif var_name == "factor":
         LOW_THRESHOLD_FACTOR = value
 
-# 创建阈值调整框架
+# 创建���值调整框架
 threshold_frame = ttk.LabelFrame(scrollable_frame, text="阈值调整", padding="10")
 threshold_frame.pack(fill="x", padx=10, pady=5)
 
@@ -234,19 +233,66 @@ min_slider, min_var = create_threshold_control(threshold_frame, "最小阈值:",
 max_slider, max_var = create_threshold_control(threshold_frame, "最大阈值:", "max", 0.001, 0.5, MAX_THRESHOLD)
 factor_slider, factor_var = create_threshold_control(threshold_frame, "低阈值因子:", "factor", 0.1, 0.9, LOW_THRESHOLD_FACTOR)
 
-# 更新状态显示函数
-def update_status_display():
-    breath_count_label.config(text=f"呼吸次数: {breath_count}")
-    if 'frequency' in globals():
-        frequency_label.config(text=f"频率: {frequency} 次/10秒")
-    # 更新呼吸状态指示器，使用更醒目的颜色
-    if is_above_threshold:
-        breath_status_indicator.itemconfig('status', fill='#FF4444', outline='#CC0000')  # 鲜艳的红色
-    else:
-        breath_status_indicator.itemconfig('status', fill='#CCCCCC', outline='#666666')  # 柔和的灰色
-    control_window.after(100, update_status_display)
+# 在文件开头的全局变量部分添加
+update_task = None  # 用于存储更新任务的ID
 
-update_status_display()
+# 替换原来的 update_status_display 函数
+def update_status_display():
+    global update_task
+    
+    if not control_window.winfo_exists():
+        return
+        
+    try:
+        breath_count_label.config(text=f"呼吸次数: {breath_count}")
+        if 'frequency' in globals():
+            frequency_label.config(text=f"频率: {frequency} 次/10秒")
+        
+        if is_above_threshold:
+            breath_status_indicator.itemconfig('status', fill='#FF4444', outline='#CC0000')
+        else:
+            breath_status_indicator.itemconfig('status', fill='#CCCCCC', outline='#666666')
+            
+        update_task = control_window.after(100, update_status_display)
+    except Exception as e:
+        print(f"更新状态时出错: {e}")
+
+# 修改 cleanup 函数
+def cleanup():
+    global update_task, running
+    running = False
+    
+    if update_task is not None:
+        try:
+            control_window.after_cancel(update_task)
+            update_task = None
+        except:
+            pass
+    
+    try:
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
+        udp_socket.close()
+        plt.close()
+        control_window.quit()
+    except:
+        pass
+
+# 修改 main_loop 函数
+def main_loop():
+    global running
+    try:
+        running = True
+        update_status_display()  # 只在这里启动一次更新循环
+        control_window.mainloop()
+    except Exception as e:
+        print(f"主循环错误: {e}")
+    finally:
+        cleanup()
+
+# 确保在窗口关闭时调用 cleanup
+control_window.protocol("WM_DELETE_WINDOW", cleanup)
 
 # 启动时间
 start_time = time.time()
@@ -349,6 +395,7 @@ def update(frame):
         else:
             if intensity > breath_start_intensity:
                 breath_start_intensity = intensity
+                print(f"实时强度: {intensity:.4f}")
     else:
         if is_above_threshold:
             if intensity < breath_start_intensity * LOW_THRESHOLD_FACTOR:
@@ -407,30 +454,10 @@ def update(frame):
         if intensities:
             ax2.set_ylim(0, max(0.1, max(intensities) * 1.2))
 
-    # 降低状态显示更新频率
-    if frame % 10 == 0:
-        update_status_display()
-
     return line1, line2
 
 # 修改动画更新
 ani = FuncAnimation(fig, update, interval=UPDATE_INTERVAL, cache_frame_data=False)
-
-# 优化主循环
-def main_loop():
-    try:
-        control_window.mainloop()
-    except Exception as e:
-        print(f"主循环错误: {e}")
-    finally:
-        cleanup()
-
-def cleanup():
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
-    udp_socket.close()
-    plt.close()
 
 # 在main_loop函数之前，添加滚动条和画布的布局
 main_canvas.pack(side="left", fill="both", expand=True)
