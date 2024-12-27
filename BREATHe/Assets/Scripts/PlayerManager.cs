@@ -56,7 +56,7 @@ public class PlayerManager : MonoBehaviour
 
         if (!isDead)
         {
-            rb.velocity = new Vector2(moveSpeed, rb.velocity.y); // 只改变x轴速度，y轴保持原有速度
+            rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
         }
 
         light2D.intensity = 0.2f + Mathf.Abs(rb.velocity.y) * 0.5f;
