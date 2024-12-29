@@ -5,21 +5,21 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public TMP_Text scoreText;            // ÊµÊ±ÏÔÊ¾µÄ»ı·Ö Text
-    public GameObject gameOverPanel;     // ÓÎÏ·½áÊøÊ±µÄÈ«ÆÁ Panel
-    public TMP_Text gameOverText;        // ÓÎÏ·½áÊøÊ±µÄµÃ·ÖÏÔÊ¾ Text
-    public Button continueButton;        // ¼ÌĞøÓÎÏ·°´Å¥£¨ÖØÖÃ³¡¾°£©
-    public Button exitButton;            // ÍË³öÓÎÏ·°´Å¥
+    public TMP_Text scoreText;            // å®æ—¶æ˜¾ç¤ºçš„å‘¼å¸ Text
+    public GameObject gameOverPanel;       // æ¸¸æˆç»“æŸæ—¶çš„å…¨å± Panel
+    public TMP_Text gameOverText;         // æ¸¸æˆç»“æŸæ—¶çš„å¾—åˆ†æ˜¾ç¤º Text
+    public Button continueButton;         // ç»§ç»­æ¸¸æˆæŒ‰é’®ï¼ˆé‡æ–°å°è¯•ï¼‰
+    public Button exitButton;             // é€€å‡ºæ¸¸æˆæŒ‰é’®
 
-    private float score = 0f;            // µ±Ç°»ı·Ö
+    private float score = 0f;             // å½“å‰åˆ†æ•°
 
     void Start()
     {
-        // Ìí¼Ó°´Å¥µã»÷ÊÂ¼ş
+        // æ·»åŠ æŒ‰é’®ç‚¹å‡»äº‹ä»¶
         continueButton.onClick.AddListener(OnContinueGame);
         exitButton.onClick.AddListener(OnExitGame);
 
-        // Òş²ØÓÎÏ·½áÊø Panel
+        // éšè—æ¸¸æˆç»“æŸ Panel
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(false);
@@ -28,92 +28,92 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-
         UpdateScore(Time.deltaTime);
     }
 
-    // ¸üĞÂ»ı·ÖÏÔÊ¾
+    // æ›´æ–°å‘¼å¸æ˜¾ç¤º
     public void UpdateScore(float increment)
     {
         score += increment;
-        //Debug.Log($"[UIManager] Score updated: {score}"); // Ìí¼ÓÈÕÖ¾
+        //Debug.Log($"[UIManager] Score updated: {score}"); // è°ƒè¯•æ—¥å¿—
 
         if (scoreText != null)
         {
-            scoreText.text = $"{score:F1} M"; // ÏÔÊ¾Îª xx.x M
+            scoreText.text = $"{score:F1} M"; // æ˜¾ç¤ºä¸º xx.x M
             //Debug.Log("[UIManager] Score text updated.");
         }
         else
         {
-            //Debug.LogWarning("[UIManager] scoreText Î´ÉèÖÃ£¬Çë¼ì²éÒıÓÃ¡£");
+            //Debug.LogWarning("[UIManager] scoreText æœªè®¾ç½®ï¼Œè¯·æ£€æŸ¥è®¾ç½®ã€‚");
         }
     }
 
-    // ÏÔÊ¾ÓÎÏ·½áÊø½çÃæ
+    // æ˜¾ç¤ºæ¸¸æˆç»“æŸç•Œé¢
     public void ShowGameOverMenu()
     {
         if (gameOverPanel != null)
         {
-            gameOverPanel.SetActive(true);  // ÏÔÊ¾ÓÎÏ·½áÊøÃæ°å
+            gameOverPanel.SetActive(true);  // æ˜¾ç¤ºæ¸¸æˆç»“æŸç•Œé¢
         }
 
         if (gameOverText != null)
         {
-            gameOverText.text = $"{score:F1} M"; // ÏÔÊ¾µÃ·Ö
+            gameOverText.text = $"{score:F1} M"; // æ˜¾ç¤ºå¾—åˆ†
         }
 
-        // ÔİÍ£ÓÎÏ·Ê±¼ä
+        // æš‚åœæ¸¸æˆæ—¶é—´
         Time.timeScale = 0f;
     }
 
-    // ÖØÖÃ³¡¾°£¨¼ÌĞøÓÎÏ·£©
+    // é‡æ–°å°è¯•ï¼ˆç»§ç»­æ¸¸æˆï¼‰
     private void OnContinueGame()
     {
         if (gameOverPanel != null)
         {
-            gameOverPanel.SetActive(false);  // Òş²ØÓÎÏ·½áÊøÃæ°å
+            gameOverPanel.SetActive(false);  // éšè—æ¸¸æˆç»“æŸç•Œé¢
         }
 
-        // »Ö¸´Ê±¼äÁ÷ÊÅ
+        // æ¢å¤æ—¶é—´æµé€Ÿ
         Time.timeScale = 1f;
-        PlayerManager.Instance.InitializePos();
-        PlayerManager.Instance.respawn();
-
-        // ÖØÖÃ³¡¾°
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        
+        // ç›´æ¥è°ƒç”¨ respawnï¼Œè€Œä¸æ˜¯ InitializePos
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.respawn();
+        }
     }
 
-    // ÍË³öÓÎÏ·
+    // é€€å‡ºæ¸¸æˆ
     private void OnExitGame()
     {
-        Debug.Log("ÍË³öÓÎÏ·");
-        Application.Quit();  // ÍË³öÓÎÏ·
-        // ÔÚ Unity ±à¼­Æ÷ÖĞÄ£ÄâÍË³ö£º
+        Debug.Log("é€€å‡ºæ¸¸æˆ");
+        Application.Quit();  // é€€å‡ºæ¸¸æˆ
+        // åœ¨ Unity ç¼–è¾‘å™¨ä¸­æ¨¡æ‹Ÿé€€å‡ºï¼š
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
     }
 
-    // ÖØÖÃ»ı·ÖºÍ UI ×´Ì¬
+    // é‡ç½®å‘¼å¸å’Œ UI çŠ¶æ€
     public void ResetUI()
     {
         score = 0f;
 
         if (scoreText != null)
         {
-            scoreText.text = $"{score:F1} M"; // ÖØÖÃ»ı·ÖÏÔÊ¾
+            scoreText.text = $"{score:F1} M"; // é‡ç½®å‘¼å¸æ˜¾ç¤º
         }
 
         if (gameOverPanel != null)
         {
-            gameOverPanel.SetActive(false); // Òş²Ø½áÊøÃæ°å
+            gameOverPanel.SetActive(false); // éšè—ç»“æŸé¢æ¿
         }
     }
 
-    // ÖØÖÃ³¡¾°
+    // é‡æ–°å°è¯•
     private void ResetScene()
     {
-        Time.timeScale = 1f; // »Ö¸´ÓÎÏ·Ê±¼ä
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // ÖØĞÂ¼ÓÔØµ±Ç°³¡¾°
+        Time.timeScale = 1f; // æ¢å¤æ¸¸æˆæ—¶é—´
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // é‡æ–°åŠ è½½å½“å‰åœºæ™¯
     }
 }

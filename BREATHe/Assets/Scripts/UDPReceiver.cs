@@ -67,6 +67,9 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
     [SerializeField] private int breathCount = 0;  // 添加呼吸次数字段
     public int BreathCount { get => breathCount; private set => breathCount = value; }
 
+    // 添加一个事件，用于通知呼吸开始
+    public event Action OnBreathStarted;
+
     void Start()
     {
         InitializeUDP();
@@ -104,10 +107,19 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
                             var updateData = JsonUtility.FromJson<UpdateData>(jsonData);
                             if (updateData != null)
                             {
+                                bool wasBreathing = IsBreathing;
                                 Intensity = updateData.intensity;
                                 IsBreathing = updateData.is_breathing;
                                 lastBreathTime = Time.time;
-                                //Debug.Log($"[UDPReceiver] 更新数据 -> 强度: {updateData.intensity:F4}, 呼吸状态: {updateData.is_breathing}");
+
+                                //Debug.Log($"[UDPReceiver] 更新数据 -> 强度: {updateData.intensity:F4}
+
+                                // 当呼吸开始时触发事件
+                                if (!wasBreathing && IsBreathing && OnBreathStarted != null)
+                                {
+                                    Debug.Log($"[UDPReceiver] 呼吸开始: 强度 {Intensity}");
+                                    OnBreathStarted.Invoke();
+                                }
                             }
                             break;
 
@@ -115,16 +127,24 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
                             var stateData = JsonUtility.FromJson<StateChangeData>(jsonData);
                             if (stateData != null)
                             {
+                                bool wasBreathing = IsBreathing;
                                 Intensity = stateData.intensity;
                                 IsBreathing = stateData.is_breathing;
                                 Frequency = stateData.frequency;
                                 BreathCount = stateData.breath_count;
                                 lastBreathTime = Time.time;
-                                
+
                                 Debug.Log($"[UDPReceiver] 状态变化 -> 呼吸: {stateData.is_breathing}, " +
                                         $"频率: {stateData.frequency:F2}, " +
                                         $"次数: {stateData.breath_count}, " +
                                         $"强度: {stateData.intensity:F4}");
+
+                                // 当呼吸开始时触发事件
+                                if (!wasBreathing && IsBreathing && OnBreathStarted != null)
+                                {
+                                    Debug.Log($"[UDPReceiver] 呼吸开始: 强度 {Intensity}");
+                                    OnBreathStarted.Invoke();
+                                }
                             }
                             break;
 

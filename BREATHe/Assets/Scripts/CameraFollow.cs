@@ -2,22 +2,29 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform player;  // ½ÇÉ«µÄ Transform
-    public float offsetY = 0f;  // ÉãÏñ»úÓë½ÇÉ«ÔÚ Y ÖáµÄÆ«ÒÆÁ¿£¨±£³ÖÉãÏñ»úÔÚË®Æ½Î»ÖÃÖĞÑë£©
-    public float offsetZ = -10f;  // ÉãÏñ»úÓë½ÇÉ«ÔÚ Z ÖáµÄÆ«ÒÆÁ¿
-    public float smoothSpeed = 0.125f;  // ÉãÏñ»úÆ½»¬ÒÆ¶¯µÄËÙ¶È
+    public Transform player;  // è§’è‰²çš„ Transform
+    public float offsetY = 0f;  // ç›¸æœºä¸è§’è‰²çš„ Y è½´åç§»é‡
+    public float offsetZ = -10f;  // ç›¸æœºä¸è§’è‰²çš„ Z è½´åç§»é‡
+    public float smoothSpeed = 0.125f;  // æ°´å¹³æ–¹å‘çš„å¹³æ»‘é€Ÿåº¦
+    public float verticalSmoothTime = 0.1f;  // å‚ç›´æ–¹å‘çš„å¹³æ»‘æ—¶é—´
 
-    private Vector3 velocity = Vector3.zero;  // ÓÃÓÚ´æ´¢µ±Ç°ÉãÏñ»úµÄÒÆ¶¯ËÙ¶È
+    private Vector3 velocity = Vector3.zero;  // ç”¨äºæ°´å¹³æ–¹å‘çš„ SmoothDamp
+    private float currentVerticalVelocity;  // ç”¨äºå‚ç›´æ–¹å‘çš„ SmoothDamp
 
     private void LateUpdate()
     {
         if (player != null)
         {
-            // ¼ÆËãÀíÏëµÄÉãÏñ»úÎ»ÖÃ
-            Vector3 desiredPosition = new Vector3(player.position.x, offsetY, offsetZ);
+            Vector3 currentPos = transform.position;
+            
+            // å‚ç›´æ–¹å‘å¹³æ»‘è·Ÿéš
+            float targetY = player.position.y + offsetY;
+            float newY = Mathf.SmoothDamp(currentPos.y, targetY, ref currentVerticalVelocity, verticalSmoothTime);
 
-            // Ê¹ÓÃÆ½»¬µÄ·½Ê½ÒÆ¶¯ÉãÏñ»ú
-            // Ê¹ÓÃ SmoothDamp ¶ø²»ÊÇ Lerp£¬ÒÔÌá¸ßÆ½»¬¶È
+            // ç›®æ ‡ä½ç½®
+            Vector3 desiredPosition = new Vector3(player.position.x, newY, offsetZ);
+            
+            // ä½¿ç”¨å¹³æ»‘çš„æ–¹å¼ç§»åŠ¨ç›¸æœº
             transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothSpeed);
         }
     }

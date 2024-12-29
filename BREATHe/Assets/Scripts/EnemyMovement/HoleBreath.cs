@@ -4,7 +4,7 @@ public class HoleBreath : MonoBehaviour
 {
     public float maxAttractionStrength = 10f;  // 吸引力
     public CircleCollider2D attractionArea;    // 吸引范围的碰撞器
-    public Transform player;
+    private Rigidbody2D playerRb;              // 玩家的刚体组件
     private bool isPlayerInRange = false;
 
     public ParticleSystem attractionParticles;
@@ -20,56 +20,43 @@ public class HoleBreath : MonoBehaviour
 
     private void Update()
     {
-        if (isPlayerInRange && player != null && attractionArea != null)
+        if (isPlayerInRange && playerRb != null && attractionArea != null)
         {
-            // 只计算竖直方向的位置差
-            float verticalDifference = transform.position.y - player.position.y;
+            // 计算竖直方向的吸引力
+            float verticalDifference = transform.position.y - playerRb.position.y;
             float distance = Mathf.Abs(verticalDifference);
-
-            // 使用指定碰撞器的半径作为最大距离
-            float attractionRadius = attractionArea.radius;
             
-            // 计算吸引力
-            float attractionStrength = maxAttractionStrength;
+            // 计算吸引力方向（只在Y轴）
+            Vector2 attractionForce = new Vector2(
+                0f,  // X方向力为0
+                verticalDifference  // Y方向力
+            ).normalized * maxAttractionStrength;
             
-            // 只在竖直方向移动
-            Vector3 newPosition = player.position;
-            newPosition.y = Mathf.MoveTowards(
-                player.position.y, 
-                transform.position.y, 
-                attractionStrength * Time.deltaTime
-            );
-            
-            // 保持x位置不变，只更新y位置
-            player.position = newPosition;
+            // 使用力来移动玩家，而不是直接修改位置
+            playerRb.AddForce(attractionForce);
         }
     }
 
-    // 新增这两个方法供 AttractionTrigger 调用
     public void OnPlayerEnterRange(Transform playerTransform)
     {
-        player = playerTransform;
+        playerRb = playerTransform.GetComponent<Rigidbody2D>();
         isPlayerInRange = true;
         Debug.Log("玩家进入吸引范围");
     }
 
     public void OnPlayerExitRange()
     {
-        player = null;
+        playerRb = null;
         isPlayerInRange = false;
         Debug.Log("玩家离开吸引范围");
     }
 
     private void OnValidate()
     {
-        // 在编辑器中验证碰撞器设置
-        if (attractionArea != null)
+        if (attractionArea != null && !attractionArea.isTrigger)
         {
-            if (!attractionArea.isTrigger)
-            {
-                Debug.LogWarning("Attraction Area 的 Is Trigger 属性未启用！");
-                attractionArea.isTrigger = true;
-            }
+            Debug.LogWarning("Attraction Area 的 Is Trigger 属性未启用！");
+            attractionArea.isTrigger = true;
         }
     }
 }

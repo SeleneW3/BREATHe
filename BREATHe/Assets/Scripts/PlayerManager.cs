@@ -19,12 +19,28 @@ public class PlayerManager : MonoBehaviour
     private TutorialStage currentStage = TutorialStage.NormalBreath;
     private bool tutorialCompleted = false;
 
-    // 添加校准相关变量
-    public bool isCalibrating = false;
-    [SerializeField] private float minBreathForce = 5f;    // 最小跳跃力
-    [SerializeField] private float maxBreathForce = 15f;   // 最大跳跃力
-    [SerializeField] private float recordedMinIntensity = float.MaxValue;  // 记录校准过程中的最小呼吸强度
-    [SerializeField] private float recordedMaxIntensity = float.MinValue;  // 记录校准过程中的最大呼吸强度
+    // 修改校准相关变量的可见性
+    [Header("校准设置")]
+    public bool isCalibrating = false;  // 改为 public 以便 TutorialArea 访问
+    [SerializeField] private float minBreathForce = 5f;
+    [SerializeField] private float maxBreathForce = 15f;
+    [SerializeField] private float recordedMinIntensity = float.MaxValue;
+    [SerializeField] private float recordedMaxIntensity = float.MinValue;
+
+    private float lastJumpTime = 0f;
+    private int jumpSoundIndex = 0;
+    private string[] jumpSounds = { "Jump1", "Jump2", "Jump3", "Jump4", "Jump5" };
+    private float jumpSoundInterval = 1f; // 1 second interval
+
+    private int bounceIndex = 0;
+    private string[] bounceSounds = { "bounce1", "bounce2", "bounce3", "bounce4" };
+
+    [Header("呼吸力度")]
+    [SerializeField] private float currentBreathForce;    // 当前呼吸产生的力
+    [SerializeField] private float lastMappedForce;       // 最后一次映射的力
+    [SerializeField] private float currentIntensity;      // 当前呼吸强度
+
+    private Vector3 currentCheckPoint;  // 当前存档点位置
 
     private void Awake()
     {
@@ -57,25 +73,50 @@ public class PlayerManager : MonoBehaviour
         {
             Debug.LogError("Player 缺少 Collider2D 组件！");
         }
+
+        // 订阅呼吸开始事件
+        if (UDPReceiver.Instance != null)
+        {
+            UDPReceiver.Instance.OnBreathStarted += PlayJumpSound;
+        }
+
+        // 初始化存档点为起始位置
+        currentCheckPoint = initialTransform;
+    }
+
+    private void OnDestroy()
+    {
+        // 取消订阅事件，防止内存泄漏
+        if (UDPReceiver.Instance != null)
+        {
+            UDPReceiver.Instance.OnBreathStarted -= PlayJumpSound;
+        }
     }
 
     private void Update()
     {
-        if (!isDead)
+        // 只在非校准且非死亡状态下进行水平移动
+        if (!isDead && !isCalibrating)
         {
             rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
+        }
+        else
+        {
+            // 在校准或死亡状态下停止水平移动，但保持垂直速度
+            rb.velocity = new Vector2(0f, rb.velocity.y);
         }
 
         if (UDPReceiver.Instance != null)
         {
             // 处理呼吸数据
-            float intensity = UDPReceiver.Instance.Intensity;
             float frequency = UDPReceiver.Instance.Frequency;
             float breathDuration = UDPReceiver.Instance.BreathDuration;
+            float intensity = UDPReceiver.Instance.Intensity;
+            currentIntensity = intensity;  // 更新当前强度
 
             // 调整灯光
-            float baseIntensity = 0.8f;  // 基础亮度
-            if (UDPReceiver.Instance.IsBreathing)  // 使用呼吸状态来控制灯光
+            float baseIntensity = 0.8f;
+            if (UDPReceiver.Instance.IsBreathing)
             {
                 targetIntensity = baseIntensity + Mathf.Abs(rb.velocity.y) * 0.5f + intensity * 0.5f;
                 light2D.pointLightOuterRadius = 2f + intensity * 5f;
@@ -90,22 +131,32 @@ public class PlayerManager : MonoBehaviour
             // 校准和跳跃逻辑
             if (isCalibrating)
             {
-                // 在校准模式下，当收到新的呼吸总结数据时更新范围
-                if (UDPReceiver.Instance.LastMaxIntensity > 0)  // 使用 LastMaxIntensity > 0 作为收到新数据的标志
+                // 实时更新校准范围
+                if (intensity > 0)  // 只在有效强度时更新
                 {
-                    recordedMinIntensity = Mathf.Min(recordedMinIntensity, UDPReceiver.Instance.LastMinIntensity);
-                    recordedMaxIntensity = Mathf.Max(recordedMaxIntensity, UDPReceiver.Instance.LastMaxIntensity);
-                    Debug.Log($"校准中 - 本次呼吸范围: {UDPReceiver.Instance.LastMinIntensity:F4} ~ {UDPReceiver.Instance.LastMaxIntensity:F4}, " +
-                            $"当前记录范围: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
+                    recordedMinIntensity = Mathf.Min(recordedMinIntensity, intensity);
+                    recordedMaxIntensity = Mathf.Max(recordedMaxIntensity, intensity);
+                    Debug.Log($"校准中 - 当前强度: {intensity:F4}, 更新范围: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
                 }
+                currentBreathForce = 0f;
+                lastMappedForce = 0f;
             }
             else
             {
-                // 只在检测到呼吸时进行跳跃
-                if (UDPReceiver.Instance.IsBreathing)
+                // 计算映射后的力
+                float mappedForce = MapBreathToForce(intensity);
+                lastMappedForce = mappedForce;  // 更新最后映射的力
+
+                // 只在检测到呼吸时进行跳跃，并且强度大于阈值
+                if (UDPReceiver.Instance.IsBreathing && intensity > 0.01f)  // 添加最小阈值检查
                 {
-                    float jumpForce = MapBreathToForce(intensity);
-                    rb.AddForce(Vector2.up * jumpForce);
+                    currentBreathForce = mappedForce;  // 更新当前实际施加的力
+                    rb.AddForce(Vector2.up * mappedForce);
+                    //Debug.Log($"施加力 - 强度: {intensity:F4}, 力: {mappedForce:F4}");
+                }
+                else
+                {
+                    currentBreathForce = 0f;
                 }
             }
 
@@ -116,11 +167,46 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    private void PlayJumpSound()
+    {
+        if (AudioManager.Instance != null && !isDead)  // 添加死亡检查
+        {
+            float currentTime = Time.time;
+            if (currentTime - lastJumpTime > jumpSoundInterval)
+            {
+                jumpSoundIndex = 0; // Reset index if more than 1 second has passed
+            }
+
+            AudioManager.Instance.PlaySound(jumpSounds[jumpSoundIndex]);
+            jumpSoundIndex = (jumpSoundIndex + 1) % jumpSounds.Length; // Cycle through sounds
+            lastJumpTime = currentTime;
+        }
+    }
 
     public void TriggerDeath()
     {
-        if (isDead) return; // 防止重复死亡
+        if (isDead) return;
         isDead = true;
+
+        // 停止所有正在播放的音效
+        if (AudioManager.Instance != null)
+        {
+            // 停止所有跳跃音效
+            foreach (string jumpSound in jumpSounds)
+            {
+                AudioManager.Instance.StopSound(jumpSound);
+            }
+
+            // 停止所有弹跳音效
+            foreach (string bounceSound in bounceSounds)
+            {
+                AudioManager.Instance.StopSound(bounceSound);
+            }
+
+            // 处理背景音乐和死亡音效
+            AudioManager.Instance.HandlePlayerDeath();
+            AudioManager.Instance.PlaySound("Death");
+        }
 
         Debug.Log("玩家死亡，触发死亡逻辑");
 
@@ -141,68 +227,39 @@ public class PlayerManager : MonoBehaviour
             Debug.Log($"与 {collision.gameObject.tag} 碰撞，触发死亡逻辑");
             TriggerDeath();
         }
+        else if (collision.gameObject.CompareTag("Ground"))
+        {
+            // 播放弹跳音效
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySound(bounceSounds[bounceIndex]);
+                // 循环切换音效索引
+                bounceIndex = (bounceIndex + 1) % bounceSounds.Length;
+            }
+        }
     }
-
-    
 
     public void InitializePos()
     {
-        gameObject.transform.position = initialTransform;
+        // 只在游戏第一次开始时调用这个方法
+        currentCheckPoint = initialTransform;
+        transform.position = initialTransform;
+        Debug.Log($"[PlayerManager] 初始化位置到起点: {initialTransform}");
     }
 
     public void respawn()
     {
         isDead = false;
-    }
-
-    private void HandleTutorial()
-    {
-        switch (currentStage)
+        
+        // 确保使用当前存档点
+        Debug.Log($"[PlayerManager] 重生到存档点: {currentCheckPoint}");
+        transform.position = currentCheckPoint;
+        rb.velocity = Vector2.zero; // 重置速度
+        
+        if (AudioManager.Instance != null)
         {
-            case TutorialStage.NormalBreath:
-                // 检测正常呼吸
-                if (CheckNormalBreath())
-                {
-                    currentStage = TutorialStage.DeepBreath;
-                    Debug.Log("正常呼吸引导完成，进入深呼吸引导");
-                }
-                break;
-            case TutorialStage.DeepBreath:
-                // 检测深呼吸
-                if (CheckDeepBreath())
-                {
-                    currentStage = TutorialStage.RapidBreath;
-                    Debug.Log("深呼吸引导完成，进入急促呼吸引导");
-                }
-                break;
-            case TutorialStage.RapidBreath:
-                // 检测急促呼吸
-                if (CheckRapidBreath())
-                {
-                    currentStage = TutorialStage.Completed;
-                    tutorialCompleted = true;
-                    Debug.Log("新手引导完成，进入正常游戏");
-                }
-                break;
+            AudioManager.Instance.HandleGameRestart();
         }
-    }
-
-    private bool CheckNormalBreath()
-    {
-        // 在这里实现正常呼吸的检测逻辑
-        return false;
-    }
-
-    private bool CheckDeepBreath()
-    {
-        // 在这里实现深呼吸的检测逻辑
-        return false;
-    }
-
-    private bool CheckRapidBreath()
-    {
-        // 在这里实现急促呼吸的检测逻辑
-        return false;
     }
 
     // 新增：开始校准
@@ -211,32 +268,68 @@ public class PlayerManager : MonoBehaviour
         isCalibrating = true;
         recordedMinIntensity = float.MaxValue;
         recordedMaxIntensity = float.MinValue;
-        Debug.Log("开始呼吸强度校准");
+        
+        // 停止水平移动
+        rb.velocity = new Vector2(0f, rb.velocity.y);
+        
+        Debug.Log("[PlayerManager] 开始校准 - 重置范围值");
     }
 
     // 新增：结束校准
     public void EndCalibration()
     {
+        if (recordedMaxIntensity <= recordedMinIntensity)
+        {
+            Debug.LogError("[PlayerManager] 校准失败 - 未检测到有效的呼吸范围!");
+            return;
+        }
+
         isCalibrating = false;
-        Debug.Log($"校准完成 - 最小强度: {recordedMinIntensity:F4}, 最大强度: {recordedMaxIntensity:F4}");
+        Debug.Log($"[PlayerManager] 校准完成 - 有效范围: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
         
-        // 可以选择保存这些值到 PlayerPrefs
+        // 保存校准值
         PlayerPrefs.SetFloat("MinBreathIntensity", recordedMinIntensity);
         PlayerPrefs.SetFloat("MaxBreathIntensity", recordedMaxIntensity);
         PlayerPrefs.Save();
+
+        // 恢复水平移动
+        rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
     }
 
-    // 新增：将呼吸强度映射到跳跃力
+    // 新增：将呼强度映射到跳跃力
     private float MapBreathToForce(float intensity)
     {
+        // 如果还没有校准过，使用默认范围
         if (recordedMaxIntensity <= recordedMinIntensity)
         {
-            return minBreathForce; // 防止除以零
+            Debug.LogWarning($"未校准或校准异常 - 使用默认力度: {minBreathForce}");
+            return minBreathForce;
         }
 
+        // 打印调试信息
+        //Debug.Log($"映射力度 - 当前强度: {intensity:F4}, 范围: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
+        
         // 将当前强度映射到校准范围内
         float normalizedIntensity = Mathf.InverseLerp(recordedMinIntensity, recordedMaxIntensity, intensity);
+        
         // 将归一化的强度映射到力的范围
-        return Mathf.Lerp(minBreathForce, maxBreathForce, normalizedIntensity);
+        float force = Mathf.Lerp(minBreathForce, maxBreathForce, normalizedIntensity);
+        
+        //Debug.Log($"映射结果 - 归一化强度: {normalizedIntensity:F4}, 最终力度: {force:F4}");
+        
+        return force;
+    }
+
+    // 更新存档点
+    public void UpdateCheckPoint(Vector3 newCheckPoint)
+    {
+        Debug.Log($"[PlayerManager] 更新存档点 - 当前: {currentCheckPoint}, 新: {newCheckPoint}");
+        currentCheckPoint = newCheckPoint;
+    }
+
+    // 获取当前存档点位置
+    public Vector3 GetCurrentCheckPoint()
+    {
+        return currentCheckPoint;
     }
 }
