@@ -5,13 +5,16 @@ public class WaveEffectController : MonoBehaviour
 {
     public TextAnimatorPlayer textAnimatorPlayer;
     public TextAnimator textAnimator;
+    public PlayerManager playerManager;
     
     [Header("Wave Effect Settings")]
     [SerializeField] private float baseAmplitude = 0.5f;    
     [SerializeField] private float baseFrequency = 0.4f;    
     [SerializeField] private float maxAmplitude = 2f;       
 
-    private string originalText;  // 存储原始文本
+    [Header("Intensity Settings")]
+    [SerializeField] private float minIntensity = 0.5f;
+    [SerializeField] private float maxIntensity = 3f;  // TextAnimator 组件的最大限制
     
     private void Start()
     {
@@ -25,33 +28,36 @@ public class WaveEffectController : MonoBehaviour
             textAnimator = GetComponent<TextAnimator>();
         }
 
-        // 保存原始文本
-        if (textAnimator != null)
+        if (playerManager == null)
         {
-            originalText = textAnimator.tmproText.text;
-            // 初始显示带波浪效果的文本
-            UpdateWaveEffect(baseAmplitude);
+            playerManager = FindObjectOfType<PlayerManager>();
         }
+
+        // 只在开始时显示一次带波浪效果的文本
+        string waveText = $"<wave a={baseAmplitude:F2} f={baseFrequency:F2}>{textAnimator.tmproText.text}</wave>";
+        textAnimatorPlayer.ShowText(waveText);
     }
 
     private void Update()
     {
-        if (UDPReceiver.Instance != null && textAnimator != null)
+        if (UDPReceiver.Instance != null && textAnimator != null && !playerManager.isCalibrating)
         {
-            // 将呼吸强度映射到振幅范围
-            float mappedAmplitude = Mathf.Lerp(baseAmplitude, maxAmplitude, UDPReceiver.Instance.Intensity);
+            // 使用校准后的范围来映射强度，并确保在 TextAnimator 的有效范围内
+            float normalizedIntensity = Mathf.InverseLerp(
+                playerManager.RecordedMinIntensity, 
+                playerManager.RecordedMaxIntensity, 
+                UDPReceiver.Instance.Intensity
+            );
             
-            // 更新波浪效果
-            UpdateWaveEffect(mappedAmplitude);
+            // 直接映射到 TextAnimator 的有效范围
+            float finalIntensity = Mathf.Lerp(minIntensity, maxIntensity, normalizedIntensity);
+            
+            textAnimator.effectIntensityMultiplier = finalIntensity;
+
+            // 为了让效果更明显，我们也可以同时调整波浪的振幅
+            float mappedAmplitude = Mathf.Lerp(baseAmplitude, maxAmplitude, normalizedIntensity);
+            string waveText = $"<wave a={mappedAmplitude:F2} f={baseFrequency:F2}>{textAnimator.tmproText.text}</wave>";
+            textAnimatorPlayer.ShowText(waveText);
         }
-    }
-
-    private void UpdateWaveEffect(float amplitude)
-    {
-        if (string.IsNullOrEmpty(originalText)) return;
-
-        // 使用原始文本更新波浪效果
-        string waveText = $"<wave a={amplitude:F2} f={baseFrequency:F2}>{originalText}</wave>";
-        textAnimatorPlayer.ShowText(waveText);
     }
 }

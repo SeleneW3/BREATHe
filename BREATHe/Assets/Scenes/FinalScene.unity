@@ -4427,11 +4427,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textAnimatorPlayer: {fileID: 0}
   textAnimator: {fileID: 0}
+  playerManager: {fileID: 0}
   baseAmplitude: 0.5
   baseFrequency: 0.4
   maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
+  minIntensity: 0.5
+  maxIntensity: 3
 --- !u!1 &508584327
 GameObject:
   m_ObjectHideFlags: 0
@@ -5145,7 +5146,6 @@ GameObject:
   - component: {fileID: 557541432}
   - component: {fileID: 557541438}
   - component: {fileID: 557541437}
-  - component: {fileID: 557541439}
   m_Layer: 0
   m_Name: dive
   m_TagString: Untagged
@@ -5445,25 +5445,6 @@ MonoBehaviour:
   useDynamicScaling: 0
   referenceFontSize: -1
   timeScale: 0
---- !u!114 &557541439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 557541430}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f352ca1bd10b171469e813cb470049ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textAnimatorPlayer: {fileID: 0}
-  textAnimator: {fileID: 0}
-  baseAmplitude: 0.5
-  baseFrequency: 0.4
-  maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
 --- !u!1 &562892894
 GameObject:
   m_ObjectHideFlags: 0
@@ -6607,7 +6588,6 @@ GameObject:
   - component: {fileID: 733040385}
   - component: {fileID: 733040392}
   - component: {fileID: 733040391}
-  - component: {fileID: 733040393}
   m_Layer: 0
   m_Name: flow
   m_TagString: Untagged
@@ -6908,25 +6888,6 @@ MonoBehaviour:
   useDynamicScaling: 0
   referenceFontSize: -1
   timeScale: 0
---- !u!114 &733040393
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 733040384}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f352ca1bd10b171469e813cb470049ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textAnimatorPlayer: {fileID: 0}
-  textAnimator: {fileID: 0}
-  baseAmplitude: 0.5
-  baseFrequency: 0.4
-  maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
 --- !u!1 &747406817
 GameObject:
   m_ObjectHideFlags: 0
@@ -8575,7 +8536,6 @@ GameObject:
   - component: {fileID: 995229691}
   - component: {fileID: 995229694}
   - component: {fileID: 995229693}
-  - component: {fileID: 995229695}
   m_Layer: 0
   m_Name: Begin
   m_TagString: Untagged
@@ -8853,25 +8813,6 @@ MonoBehaviour:
   useDynamicScaling: 0
   referenceFontSize: -1
   timeScale: 0
---- !u!114 &995229695
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 995229686}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f352ca1bd10b171469e813cb470049ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textAnimatorPlayer: {fileID: 0}
-  textAnimator: {fileID: 0}
-  baseAmplitude: 0.5
-  baseFrequency: 0.4
-  maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
 --- !u!1001 &1002366209
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9082,7 +9023,6 @@ GameObject:
   - component: {fileID: 1019938786}
   - component: {fileID: 1019938793}
   - component: {fileID: 1019938792}
-  - component: {fileID: 1019938794}
   m_Layer: 0
   m_Name: focus
   m_TagString: Untagged
@@ -9318,7 +9258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   triggerAnimPlayerOnChange: 0
-  effectIntensityMultiplier: 2
+  effectIntensityMultiplier: 1.5
   appearancesContainer:
     tagsFallback_Appearances:
     - size
@@ -9382,25 +9322,6 @@ MonoBehaviour:
   useDynamicScaling: 0
   referenceFontSize: -1
   timeScale: 0
---- !u!114 &1019938794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1019938785}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f352ca1bd10b171469e813cb470049ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textAnimatorPlayer: {fileID: 0}
-  textAnimator: {fileID: 0}
-  baseAmplitude: 0.5
-  baseFrequency: 0.4
-  maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
 --- !u!1 &1023279547
 GameObject:
   m_ObjectHideFlags: 0
@@ -9545,7 +9466,6 @@ GameObject:
   - component: {fileID: 1026000023}
   - component: {fileID: 1026000030}
   - component: {fileID: 1026000029}
-  - component: {fileID: 1026000031}
   m_Layer: 0
   m_Name: balance
   m_TagString: Untagged
@@ -9781,7 +9701,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   triggerAnimPlayerOnChange: 0
-  effectIntensityMultiplier: 2
+  effectIntensityMultiplier: 1
   appearancesContainer:
     tagsFallback_Appearances:
     - size
@@ -9845,25 +9765,6 @@ MonoBehaviour:
   useDynamicScaling: 0
   referenceFontSize: -1
   timeScale: 0
---- !u!114 &1026000031
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1026000022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f352ca1bd10b171469e813cb470049ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textAnimatorPlayer: {fileID: 0}
-  textAnimator: {fileID: 0}
-  baseAmplitude: 0.5
-  baseFrequency: 0.4
-  maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
 --- !u!1 &1026758025
 GameObject:
   m_ObjectHideFlags: 0
@@ -10011,7 +9912,6 @@ GameObject:
   - component: {fileID: 1035758579}
   - component: {fileID: 1035758585}
   - component: {fileID: 1035758584}
-  - component: {fileID: 1035758586}
   m_Layer: 0
   m_Name: End
   m_TagString: Untagged
@@ -10311,25 +10211,6 @@ MonoBehaviour:
   useDynamicScaling: 0
   referenceFontSize: -1
   timeScale: 0
---- !u!114 &1035758586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1035758577}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f352ca1bd10b171469e813cb470049ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textAnimatorPlayer: {fileID: 0}
-  textAnimator: {fileID: 0}
-  baseAmplitude: 0.5
-  baseFrequency: 0.4
-  maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
 --- !u!1001 &1048881233
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11613,7 +11494,6 @@ GameObject:
   - component: {fileID: 1165410655}
   - component: {fileID: 1165410661}
   - component: {fileID: 1165410660}
-  - component: {fileID: 1165410662}
   m_Layer: 0
   m_Name: balanceII
   m_TagString: Untagged
@@ -11850,7 +11730,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   triggerAnimPlayerOnChange: 0
-  effectIntensityMultiplier: 2
+  effectIntensityMultiplier: 1
   appearancesContainer:
     tagsFallback_Appearances:
     - size
@@ -11914,25 +11794,6 @@ MonoBehaviour:
   useDynamicScaling: 0
   referenceFontSize: -1
   timeScale: 0
---- !u!114 &1165410662
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1165410653}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f352ca1bd10b171469e813cb470049ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textAnimatorPlayer: {fileID: 0}
-  textAnimator: {fileID: 0}
-  baseAmplitude: 0.5
-  baseFrequency: 0.4
-  maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
 --- !u!1 &1166553207
 GameObject:
   m_ObjectHideFlags: 0
@@ -23348,7 +23209,6 @@ GameObject:
   - component: {fileID: 1948358817}
   - component: {fileID: 1948358824}
   - component: {fileID: 1948358823}
-  - component: {fileID: 1948358825}
   m_Layer: 0
   m_Name: exhaustion
   m_TagString: Untagged
@@ -23585,7 +23445,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   triggerAnimPlayerOnChange: 0
-  effectIntensityMultiplier: 2
+  effectIntensityMultiplier: 2.5
   appearancesContainer:
     tagsFallback_Appearances:
     - size
@@ -23649,25 +23509,6 @@ MonoBehaviour:
   useDynamicScaling: 0
   referenceFontSize: -1
   timeScale: 0
---- !u!114 &1948358825
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1948358816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f352ca1bd10b171469e813cb470049ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textAnimatorPlayer: {fileID: 0}
-  textAnimator: {fileID: 0}
-  baseAmplitude: 0.5
-  baseFrequency: 0.4
-  maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
 --- !u!1 &1948422955
 GameObject:
   m_ObjectHideFlags: 0
@@ -23865,7 +23706,6 @@ GameObject:
   - component: {fileID: 2056470902}
   - component: {fileID: 2056470908}
   - component: {fileID: 2056470907}
-  - component: {fileID: 2056470909}
   m_Layer: 0
   m_Name: cycle
   m_TagString: Untagged
@@ -24102,7 +23942,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   triggerAnimPlayerOnChange: 0
-  effectIntensityMultiplier: 2
+  effectIntensityMultiplier: 1.5
   appearancesContainer:
     tagsFallback_Appearances:
     - size
@@ -24166,25 +24006,6 @@ MonoBehaviour:
   useDynamicScaling: 0
   referenceFontSize: -1
   timeScale: 0
---- !u!114 &2056470909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2056470900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f352ca1bd10b171469e813cb470049ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textAnimatorPlayer: {fileID: 0}
-  textAnimator: {fileID: 0}
-  baseAmplitude: 0.5
-  baseFrequency: 0.4
-  maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
 --- !u!1 &2081782232
 GameObject:
   m_ObjectHideFlags: 0
@@ -24646,7 +24467,6 @@ GameObject:
   - component: {fileID: 2106994038}
   - component: {fileID: 2106994040}
   - component: {fileID: 2106994039}
-  - component: {fileID: 2106994041}
   m_Layer: 0
   m_Name: rhythm
   m_TagString: Untagged
@@ -24946,25 +24766,6 @@ MonoBehaviour:
   useDynamicScaling: 0
   referenceFontSize: -1
   timeScale: 0
---- !u!114 &2106994041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106994032}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f352ca1bd10b171469e813cb470049ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textAnimatorPlayer: {fileID: 0}
-  textAnimator: {fileID: 0}
-  baseAmplitude: 0.5
-  baseFrequency: 0.4
-  maxAmplitude: 2
-  minIntensityMultiplier: 0.5
-  maxIntensityMultiplier: 3.5
 --- !u!1 &2107120573
 GameObject:
   m_ObjectHideFlags: 0

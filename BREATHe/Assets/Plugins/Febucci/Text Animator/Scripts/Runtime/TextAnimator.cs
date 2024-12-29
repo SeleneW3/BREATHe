@@ -167,7 +167,7 @@ namespace Febucci.UI
         bool triggerAnimPlayerOnChange = false;
 
         [SerializeField]
-        float effectIntensityMultiplier = 50;
+        public float effectIntensityMultiplier = 50;
 
         [UnityEngine.Serialization.FormerlySerializedAs("defaultAppearance"), SerializeField, Header("Text Appearance")]
         AppearancesContainer appearancesContainer = new AppearancesContainer();

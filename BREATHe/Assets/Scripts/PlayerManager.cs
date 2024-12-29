@@ -15,9 +15,6 @@ public class PlayerManager : MonoBehaviour
     public Light2D light2D;
     public SpriteRenderer spriteRenderer;
     private float targetIntensity = 0f; // 目标灯光强度
-    private enum TutorialStage { NormalBreath, DeepBreath, RapidBreath, Completed }
-    private TutorialStage currentStage = TutorialStage.NormalBreath;
-    private bool tutorialCompleted = false;
 
     // 修改校准相关变量的可见性
     [Header("校准设置")]
@@ -26,6 +23,10 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private float maxBreathForce = 15f;
     [SerializeField] private float recordedMinIntensity = float.MaxValue;
     [SerializeField] private float recordedMaxIntensity = float.MinValue;
+
+    // 添加公共访问器
+    public float RecordedMinIntensity => recordedMinIntensity;
+    public float RecordedMaxIntensity => recordedMaxIntensity;
 
     private float lastJumpTime = 0f;
     private int jumpSoundIndex = 0;
@@ -152,7 +153,7 @@ public class PlayerManager : MonoBehaviour
                 {
                     currentBreathForce = mappedForce;  // 更新当前实际施加的力
                     rb.AddForce(Vector2.up * mappedForce);
-                    //Debug.Log($"施加力 - 强度: {intensity:F4}, 力: {mappedForce:F4}");
+                    Debug.LogWarning($"施加力 - 强度: {intensity:F4}, 力: {mappedForce:F4}");
                 }
                 else
                 {
@@ -216,8 +217,6 @@ public class PlayerManager : MonoBehaviour
             uiManager.ShowGameOverMenu();
         }
     }
-
-
 
 
     private void OnCollisionEnter2D(Collision2D collision)
