@@ -25,7 +25,7 @@ RATE = 44100
 
 # 呼吸检测参数
 breath_count = 0  # 呼吸次数
-THRESHOLD = 0.015     # 初始阈值
+THRESHOLD = 0.002     # 初始阈值
 MAX_THRESHOLD = 0.05     # 呼吸的最高强度阈值
 LOW_THRESHOLD_FACTOR = 0.3  # 呼吸结束的低强度阈值占比
 is_above_threshold = False  # 标记是否处于呼吸周期
@@ -225,7 +225,7 @@ def update_threshold(var_name, value):
     elif var_name == "factor":
         LOW_THRESHOLD_FACTOR = value
 
-# 创建���值调整框架
+# 创建阈值调整框架
 threshold_frame = ttk.LabelFrame(scrollable_frame, text="阈值调整", padding="10")
 threshold_frame.pack(fill="x", padx=10, pady=5)
 

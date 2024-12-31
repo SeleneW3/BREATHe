@@ -13,8 +13,8 @@ public class WaveEffectController : MonoBehaviour
     [SerializeField] private float maxAmplitude = 2f;       
 
     [Header("Intensity Settings")]
-    [SerializeField] private float minIntensity = 0.5f;
-    [SerializeField] private float maxIntensity = 3f;  // TextAnimator 组件的最大限制
+    [SerializeField] private float minIntensity = 5f;     // 对应 minBreathForce
+    [SerializeField] private float maxIntensity = 15f;    // 对应 maxBreathForce
     
     private void Start()
     {

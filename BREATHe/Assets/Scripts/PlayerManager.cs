@@ -43,6 +43,9 @@ public class PlayerManager : MonoBehaviour
 
     private Vector3 currentCheckPoint;  // 当前存档点位置
 
+    // 添加重生事件
+    public event System.Action OnPlayerRespawn;
+
     private void Awake()
     {
         if (Instance == null)
@@ -83,6 +86,14 @@ public class PlayerManager : MonoBehaviour
 
         // 初始化存档点为起始位置
         currentCheckPoint = initialTransform;
+
+        // 加载保存的校准值
+        if (PlayerPrefs.HasKey("MinBreathIntensity") && PlayerPrefs.HasKey("MaxBreathIntensity"))
+        {
+            recordedMinIntensity = PlayerPrefs.GetFloat("MinBreathIntensity");
+            recordedMaxIntensity = PlayerPrefs.GetFloat("MaxBreathIntensity");
+            Debug.Log($"[PlayerManager] 加载校准值: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
+        }
     }
 
     private void OnDestroy()
@@ -255,6 +266,9 @@ public class PlayerManager : MonoBehaviour
         transform.position = currentCheckPoint;
         rb.velocity = Vector2.zero; // 重置速度
         
+        // 触发重生事件，重置所有钻石
+        OnPlayerRespawn?.Invoke();
+        
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.HandleGameRestart();
@@ -270,6 +284,12 @@ public class PlayerManager : MonoBehaviour
         
         // 停止水平移动
         rb.velocity = new Vector2(0f, rb.velocity.y);
+        
+        // 启动UI倒计时
+        if (uiManager != null)
+        {
+            uiManager.StartCalibrationUI();
+        }
         
         Debug.Log("[PlayerManager] 开始校准 - 重置范围值");
     }

@@ -5,13 +5,36 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     public TMP_Text scoreText;            // 实时显示的呼吸 Text
     public GameObject gameOverPanel;       // 游戏结束时的全屏 Panel
     public TMP_Text gameOverText;         // 游戏结束时的得分显示 Text
     public Button continueButton;         // 继续游戏按钮（重新尝试）
     public Button exitButton;             // 退出游戏按钮
 
+    [Header("Tutorial UI")]
+    public GameObject tutorialPanel;        // 新手引导面板
+    public TMP_Text countdownText;          // 倒计时文本
+    private float calibrationTimer = 10f;   // 校准时间，与 TutorialArea 保持一致
+    private bool isCountingDown = false;    // 是否正在倒计时
+
     private float score = 0f;             // 当前分数
+
+    [Header("Victory UI")]
+    public TMP_Text endText;  // 结束文本
 
     void Start()
     {
@@ -24,11 +47,42 @@ public class UIManager : MonoBehaviour
         {
             gameOverPanel.SetActive(false);
         }
+
+        if (tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(false);
+        }
+
+        // 确保结束文本开始时是隐藏的
+        if (endText != null)
+        {
+            endText.gameObject.SetActive(false);
+        }
     }
 
     private void Update()
     {
         UpdateScore(Time.deltaTime);
+
+        // 检测 ESC 键
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            OnExitGame();
+        }
+
+        // 更新倒计时
+        if (isCountingDown && countdownText != null)
+        {
+            calibrationTimer -= Time.deltaTime;
+            if (calibrationTimer <= 0)
+            {
+                EndCalibrationUI();
+            }
+            else
+            {
+                UpdateCountdownText();
+            }
+        }
     }
 
     // 更新呼吸显示
@@ -84,7 +138,7 @@ public class UIManager : MonoBehaviour
     }
 
     // 退出游戏
-    private void OnExitGame()
+    public void OnExitGame()
     {
         Debug.Log("退出游戏");
         Application.Quit();  // 退出游戏
@@ -115,5 +169,54 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1f; // 恢复游戏时间
         SceneManager.LoadScene(SceneManager.GetActiveScene().name); // 重新加载当前场景
+    }
+
+    // 开始校准倒计时
+    public void StartCalibrationUI()
+    {
+        if (tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(true);
+        }
+        calibrationTimer = 10f;
+        isCountingDown = true;
+        UpdateCountdownText();
+    }
+
+    // 结束校准倒计时
+    private void EndCalibrationUI()
+    {
+        isCountingDown = false;
+        if (tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(false);
+        }
+    }
+
+    // 更新倒计时文本
+    private void UpdateCountdownText()
+    {
+        if (countdownText != null)
+        {
+            countdownText.text = $"Calibrating...\n\n\n{Mathf.CeilToInt(calibrationTimer)}";
+        }
+    }
+
+    // 显示结束文本
+    public void ShowEndText()
+    {
+        if (endText != null)
+        {
+            endText.gameObject.SetActive(true);
+        }
+    }
+
+    // 隐藏结束文本
+    public void HideEndText()
+    {
+        if (endText != null)
+        {
+            endText.gameObject.SetActive(false);
+        }
     }
 }

@@ -3,12 +3,13 @@ using UnityEngine;
 public class DiamondFall : MonoBehaviour
 {
     public float fallSpeed = 8.0f;
-    private float startY;
+    private Vector3 startPosition;  // 存储初始位置
     private bool canFall = false;
 
     void Start()
     {
-        startY = transform.position.y;
+        // 保存完整的初始位置
+        startPosition = transform.position;
     }
 
     void Update()
@@ -29,5 +30,30 @@ public class DiamondFall : MonoBehaviour
     public void StartFalling()
     {
         canFall = true;
+    }
+
+    // 重置钻石位置和状态
+    public void ResetDiamond()
+    {
+        transform.position = startPosition;
+        canFall = false;
+    }
+
+    // 订阅玩家重生事件
+    private void OnEnable()
+    {
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.OnPlayerRespawn += ResetDiamond;
+        }
+    }
+
+    // 取消订阅事件
+    private void OnDisable()
+    {
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.OnPlayerRespawn -= ResetDiamond;
+        }
     }
 }
