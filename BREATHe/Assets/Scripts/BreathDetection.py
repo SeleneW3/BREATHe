@@ -225,7 +225,7 @@ def update_threshold(var_name, value):
     elif var_name == "factor":
         LOW_THRESHOLD_FACTOR = value
 
-# 创建���值调整框架
+# 创建阈值调整框架
 threshold_frame = ttk.LabelFrame(scrollable_frame, text="阈值调整", padding="10")
 threshold_frame.pack(fill="x", padx=10, pady=5)
 
@@ -235,6 +235,7 @@ factor_slider, factor_var = create_threshold_control(threshold_frame, "低阈值
 
 # 在文件开头的全局变量部分添加
 update_task = None  # 用于存储更新任务的ID
+frequency = 0  # 初始化频率变量
 
 # 替换原来的 update_status_display 函数
 def update_status_display():
@@ -424,9 +425,10 @@ def update(frame):
                 'is_breathing': is_above_threshold,
                 'time': current_time,
                 'intensity': intensity,
-                'frequency': frequency if 'frequency' in locals() else 0,
+                'frequency': frequency,
                 'breath_count': breath_count
             }
+            print(f"发送状态变化数据: {json.dumps(data, ensure_ascii=False, indent=2)}")
         else:
             data = {
                 'type': 'update',
