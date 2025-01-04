@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using System.Collections;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -45,6 +46,17 @@ public class PlayerManager : MonoBehaviour
 
     // 添加重生事件
     public event System.Action OnPlayerRespawn;
+
+    [Header("Speed Boost")]
+    [SerializeField] private float speedBoostAmount = 2f;    // 加速倍数
+    [SerializeField] private float speedBoostDuration = 3f;  // 加速持续时间
+    [SerializeField] private GameObject rippleEffectPrefab;  // 涟漪预制体
+    [SerializeField] private float rippleAnimationDuration = 0.5f;  // 涟漪动画持续时间
+    private Coroutine speedBoostCoroutine;
+
+    [Header("Ground Effects")]
+    [SerializeField] private ParticleSystem groundParticles;  // 地面粒子效果
+    [SerializeField] private float effectDuration = 1f;       // 效果持续时间
 
     private void Awake()
     {
@@ -243,8 +255,29 @@ public class PlayerManager : MonoBehaviour
             if (AudioManager.Instance != null)
             {
                 AudioManager.Instance.PlaySound(bounceSounds[bounceIndex]);
-                // 循环切换音效索引
                 bounceIndex = (bounceIndex + 1) % bounceSounds.Length;
+            }
+
+            // 在碰撞点播放粒子效果
+            if (groundParticles != null)
+            {
+                Vector2 contactPoint = collision.GetContact(0).point;
+                ParticleSystem effect = Instantiate(groundParticles, contactPoint, Quaternion.identity);
+                
+                // 获取动画组件
+                Animator animator = effect.GetComponent<Animator>();
+                if (animator != null)
+                {
+                    // 获取动画片段的实际长度
+                    float animationLength = animator.GetCurrentAnimatorStateInfo(0).length;
+                    // 使用动画长度或指定的持续时间
+                    Destroy(effect.gameObject, animationLength > 0 ? animationLength : effectDuration);
+                }
+                else
+                {
+                    // 如果没有动画组件，使用指定的持续时间
+                    Destroy(effect.gameObject, effectDuration);
+                }
             }
         }
     }
@@ -350,5 +383,52 @@ public class PlayerManager : MonoBehaviour
     public Vector3 GetCurrentCheckPoint()
     {
         return currentCheckPoint;
+    }
+
+    public void ActivateSpeedBoost()
+    {
+        if (speedBoostCoroutine != null)
+        {
+            StopCoroutine(speedBoostCoroutine);
+        }
+        speedBoostCoroutine = StartCoroutine(SpeedBoostRoutine());
+    }
+
+    private void PlayRippleEffect()
+    {
+        if (rippleEffectPrefab != null)
+        {
+            // 在玩家位置生成涟漪效果
+            GameObject ripple = Instantiate(rippleEffectPrefab, transform.position, Quaternion.identity);
+            
+            // 获取动画组件
+            Animator animator = ripple.GetComponent<Animator>();
+            if (animator != null)
+            {
+                // 获取动画片段的实际长度
+                float animationLength = animator.GetCurrentAnimatorStateInfo(0).length;
+                // 使用动画长度或指定的持续时间
+                Destroy(ripple, animationLength > 0 ? animationLength : rippleAnimationDuration);
+            }
+            else
+            {
+                // 如果没有动画组件，使用指定的持续时间
+                Destroy(ripple, rippleAnimationDuration);
+            }
+        }
+    }
+
+    private IEnumerator SpeedBoostRoutine()
+    {
+        // 启用加速
+        moveSpeed *= speedBoostAmount;
+        
+        // 播放涟漪效果
+        PlayRippleEffect();
+
+        yield return new WaitForSeconds(speedBoostDuration);
+
+        // 恢复正常速度
+        moveSpeed /= speedBoostAmount;
     }
 }
