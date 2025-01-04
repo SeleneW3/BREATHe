@@ -235,6 +235,7 @@ factor_slider, factor_var = create_threshold_control(threshold_frame, "低阈值
 
 # 在文件开头的全局变量部分添加
 update_task = None  # 用于存储更新任务的ID
+last_valid_frequency = 0  # 添加这行到文件开头的全局变量区域
 
 # 替换原来的 update_status_display 函数
 def update_status_display():
@@ -312,7 +313,7 @@ CALIBRATION_TIME = 3  # 校准时（秒）
 MOVING_AVERAGE_WINDOW = 3  # 减小移动平均窗口大小
 SMOOTHING_FACTOR = 0.3  # 指数移动平均的平滑因子
 noise_baseline = 0  # 噪音基线值
-is_calibrating = True  # 校准标志
+is_calibrating = False
 calibration_start_time = 0  # 校准开始时间
 calibration_samples = []  # 校准样本
 
@@ -341,9 +342,10 @@ noise_baseline_label.pack(side="left", padx=5)
 
 # 更新函数
 def update(frame):
-    global is_above_threshold, last_time, last_intensity, breath_start_intensity, breath_start_time
+    global is_above_threshold, last_time, last_intensity, breath_start_intensity
     global breath_end_time, breath_count, frequency, times, intensities
     global breath_events, is_calibrating, noise_baseline, calibration_samples
+    global last_valid_frequency  # 确保在函数开头声明
 
     try:
         # 读取音频数据
@@ -406,13 +408,12 @@ def update(frame):
 
                 if breath_duration >= MIN_BREATH_DURATION:
                     breath_count += 1
-                    # 优化呼吸事件存储：只保留最近10秒的事件
+                    current_time = time.time() - start_time
                     breath_events = [t for t in breath_events if current_time - t <= 10]
                     breath_events.append(current_time)
-                    frequency = len(breath_events)
-                    print(f"🔵 呼吸结束 -> 频率: {frequency} 次/10秒, 持续: {breath_duration:.2f}秒")
-                else:
-                    print(f"⚠️ 呼吸周期过短，忽略：{breath_duration:.2f} 秒")
+                    frequency = len(breath_events)  # 计算频率
+                    last_valid_frequency = frequency  # 更新最后一个有效频率
+                    print(f"🔵 呼吸结束 -> 频率: {frequency} 次/10秒")
 
                 last_time = breath_end_time
 
@@ -424,16 +425,19 @@ def update(frame):
                 'is_breathing': is_above_threshold,
                 'time': current_time,
                 'intensity': intensity,
-                'frequency': frequency if 'frequency' in locals() else 0,
+                'frequency': last_valid_frequency,
                 'breath_count': breath_count
             }
         else:
             data = {
                 'type': 'update',
                 'is_breathing': is_above_threshold,
-                'intensity': intensity
+                'intensity': intensity,
+                'frequency': last_valid_frequency
             }
         
+        # 打印完整的发送数据
+        print(f"[DEBUG] 发送数据包: {json.dumps(data, indent=2)}")
         udp_socket.sendto(json.dumps(data).encode(), (HOST, PORT))
     except BlockingIOError:
         pass

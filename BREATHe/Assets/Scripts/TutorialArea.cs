@@ -30,7 +30,7 @@ public class TutorialArea : MonoBehaviour
 
             // 显示剩余时间
             float remainingTime = calibrationDuration - calibrationTimer;
-            Debug.Log($"[TutorialArea] 校准剩余时间: {remainingTime:F1}秒");
+            //Debug.Log($"[TutorialArea] 校准剩余时间: {remainingTime:F1}秒");
 
             // 检查是否达到校准时间
             if (calibrationTimer >= calibrationDuration)

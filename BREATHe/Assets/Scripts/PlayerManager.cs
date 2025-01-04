@@ -9,7 +9,7 @@ public class PlayerManager : MonoBehaviour
     public Rigidbody2D rb;
 
     private UIManager uiManager; 
-    public float moveSpeed = 6f;
+    public float moveSpeed = 2.5f;  // 默认速度为最小速度
 
     Vector3 initialTransform;
 
@@ -58,6 +58,15 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private ParticleSystem groundParticles;  // 地面粒子效果
     [SerializeField] private float effectDuration = 1f;       // 效果持续时间
 
+    [Header("Speed Settings")]
+    [SerializeField] private float minSpeed = 2.5f;      // 最小速度
+    [SerializeField] private float maxSpeed = 5.5f;      // 最大速度
+    [SerializeField] private float minFrequency = 1f;    // 最小频率
+    [SerializeField] private float maxFrequency = 10f;   // 最大频率
+    [SerializeField] private float currentFrequency;     // 当前频率
+    private float baseSpeed;                             // 基础速度（由频率映射）
+    private bool isSpeedBoosted = false;                // 是否处于加速状态
+
     private void Awake()
     {
         if (Instance == null)
@@ -104,7 +113,7 @@ public class PlayerManager : MonoBehaviour
         {
             recordedMinIntensity = PlayerPrefs.GetFloat("MinBreathIntensity");
             recordedMaxIntensity = PlayerPrefs.GetFloat("MaxBreathIntensity");
-            Debug.Log($"[PlayerManager] 加载校准值: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
+            //Debug.Log($"[PlayerManager] 加载校准值: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
         }
     }
 
@@ -122,6 +131,23 @@ public class PlayerManager : MonoBehaviour
         // 只在非校准且非死亡状态下进行水平移动
         if (!isDead && !isCalibrating)
         {
+            // 获取当前频率并映射到基础速度
+            if (UDPReceiver.Instance != null)
+            {
+                currentFrequency = UDPReceiver.Instance.Frequency;
+                baseSpeed = MapFrequencyToSpeed(currentFrequency);
+                float oldSpeed = moveSpeed;
+                moveSpeed = isSpeedBoosted ? baseSpeed * speedBoostAmount : baseSpeed;
+
+                // 只在速度变化时输出日志
+                if (Mathf.Abs(oldSpeed - moveSpeed) > 0.01f)
+                {
+                    Debug.Log($"[PlayerManager] 速度更新: baseSpeed={baseSpeed}, " +
+                             $"isSpeedBoosted={isSpeedBoosted}, " +
+                             $"oldSpeed={oldSpeed} -> newSpeed={moveSpeed}");
+                }
+            }
+            
             rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
         }
         else
@@ -160,7 +186,7 @@ public class PlayerManager : MonoBehaviour
                 {
                     recordedMinIntensity = Mathf.Min(recordedMinIntensity, intensity);
                     recordedMaxIntensity = Mathf.Max(recordedMaxIntensity, intensity);
-                    Debug.Log($"校准中 - 当前强度: {intensity:F4}, 更新范围: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
+                    //Debug.Log($"校准中 - 当前强度: {intensity:F4}, 更新范围: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
                 }
                 currentBreathForce = 0f;
                 lastMappedForce = 0f;
@@ -176,7 +202,7 @@ public class PlayerManager : MonoBehaviour
                 {
                     currentBreathForce = mappedForce;  // 更新当前实际施加的力
                     rb.AddForce(Vector2.up * mappedForce);
-                    Debug.LogWarning($"施加力 - 强度: {intensity:F4}, 力: {mappedForce:F4}");
+                    //Debug.LogWarning($"施加力 - 强度: {intensity:F4}, 力: {mappedForce:F4}");
                 }
                 else
                 {
@@ -324,7 +350,7 @@ public class PlayerManager : MonoBehaviour
             uiManager.StartCalibrationUI();
         }
         
-        Debug.Log("[PlayerManager] 开始校准 - 重置范围值");
+        //Debug.Log("[PlayerManager] 开始校准 - 重置范围值");
     }
 
     // 新增：结束校准
@@ -332,12 +358,12 @@ public class PlayerManager : MonoBehaviour
     {
         if (recordedMaxIntensity <= recordedMinIntensity)
         {
-            Debug.LogError("[PlayerManager] 校准失败 - 未检测到有效的呼吸范围!");
+            //Debug.LogError("[PlayerManager] 校准失败 - 未检测到有效的呼吸范围!");
             return;
         }
 
         isCalibrating = false;
-        Debug.Log($"[PlayerManager] 校准完成 - 有效范围: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
+        //Debug.Log($"[PlayerManager] 校准完成 - 有效范围: {recordedMinIntensity:F4} ~ {recordedMaxIntensity:F4}");
         
         // 保存校准值
         PlayerPrefs.SetFloat("MinBreathIntensity", recordedMinIntensity);
@@ -421,7 +447,13 @@ public class PlayerManager : MonoBehaviour
     private IEnumerator SpeedBoostRoutine()
     {
         // 启用加速
-        moveSpeed *= speedBoostAmount;
+        isSpeedBoosted = true;
+        float oldSpeed = moveSpeed;
+        moveSpeed = baseSpeed * speedBoostAmount;
+        
+        Debug.Log($"[SpeedBoost] 开始加速: baseSpeed={baseSpeed}, " +
+                  $"speedBoostAmount={speedBoostAmount}, " +
+                  $"oldSpeed={oldSpeed} -> newSpeed={moveSpeed}");
         
         // 播放涟漪效果
         PlayRippleEffect();
@@ -429,6 +461,22 @@ public class PlayerManager : MonoBehaviour
         yield return new WaitForSeconds(speedBoostDuration);
 
         // 恢复正常速度
-        moveSpeed /= speedBoostAmount;
+        oldSpeed = moveSpeed;
+        isSpeedBoosted = false;
+        moveSpeed = baseSpeed;
+        
+        Debug.Log($"[SpeedBoost] 结束加速: oldSpeed={oldSpeed} -> newSpeed={moveSpeed}");
+    }
+
+    private float MapFrequencyToSpeed(float frequency)
+    {
+        // 限制频率范围
+        float clampedFrequency = Mathf.Clamp(frequency, minFrequency, maxFrequency);
+        
+        // 映射频率到速度
+        float normalizedFrequency = Mathf.InverseLerp(minFrequency, maxFrequency, clampedFrequency);
+        float mappedSpeed = Mathf.Lerp(minSpeed, maxSpeed, normalizedFrequency);
+        
+        return mappedSpeed;
     }
 }

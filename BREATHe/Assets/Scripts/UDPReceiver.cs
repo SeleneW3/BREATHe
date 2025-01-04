@@ -17,6 +17,7 @@ public class UpdateData : BaseBreathData
 {
     public bool is_breathing;    // 当前是否在呼吸
     public float intensity;      // 实时呼吸强度
+    public float frequency;      // 添加频率字段
 }
 
 [System.Serializable]
@@ -93,33 +94,37 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
 
         try 
         {    
-            while (udpClient.Available > 0)  // 使用while循环处理所有可用数据
+            while (udpClient.Available > 0)
             {
                 byte[] data = udpClient.Receive(ref remoteEndPoint);
                 string jsonData = Encoding.UTF8.GetString(data);
+                
+                // 添加更详细的数据包检查
+                Debug.Log($"[UDPReceiver] 原始数据包: {jsonData}");
+                Debug.Log($"[UDPReceiver] 数据包长度: {data.Length} 字节");
+                Debug.Log($"[UDPReceiver] 发送方地址: {remoteEndPoint.Address}:{remoteEndPoint.Port}");
 
                 var baseData = JsonUtility.FromJson<BaseBreathData>(jsonData);
                 if (baseData != null)
                 {
+                    Debug.Log($"[UDPReceiver] 消息类型: {baseData.type}");
+                    
                     switch (baseData.type)
                     {
                         case "update":
                             var updateData = JsonUtility.FromJson<UpdateData>(jsonData);
                             if (updateData != null)
                             {
+                                Debug.Log($"[UDPReceiver] Update 数据包解析结果:");
+                                Debug.Log($"  - is_breathing: {updateData.is_breathing}");
+                                Debug.Log($"  - intensity: {updateData.intensity}");
+                                Debug.Log($"  - frequency: {updateData.frequency}");
+
                                 bool wasBreathing = IsBreathing;
                                 Intensity = updateData.intensity;
                                 IsBreathing = updateData.is_breathing;
+                                Frequency = updateData.frequency;
                                 lastBreathTime = Time.time;
-
-                                //Debug.Log($"[UDPReceiver] 更新数据 -> 强度: {updateData.intensity:F4}
-
-                                // 当呼吸开始时触发事件
-                                if (!wasBreathing && IsBreathing && OnBreathStarted != null)
-                                {
-                                    Debug.Log($"[UDPReceiver] 呼吸开始: 强度 {Intensity}");
-                                    OnBreathStarted.Invoke();
-                                }
                             }
                             break;
 
@@ -130,26 +135,12 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
                                 bool wasBreathing = IsBreathing;
                                 Intensity = stateData.intensity;
                                 IsBreathing = stateData.is_breathing;
-                                Frequency = stateData.frequency;
+                                Frequency = stateData.frequency;  // 更新频率
                                 BreathCount = stateData.breath_count;
                                 lastBreathTime = Time.time;
 
-                                Debug.Log($"[UDPReceiver] 状态变化 -> 呼吸: {stateData.is_breathing}, " +
-                                        $"频率: {stateData.frequency:F2}, " +
-                                        $"次数: {stateData.breath_count}, " +
-                                        $"强度: {stateData.intensity:F4}");
-
-                                // 当呼吸开始时触发事件
-                                if (!wasBreathing && IsBreathing && OnBreathStarted != null)
-                                {
-                                    Debug.Log($"[UDPReceiver] 呼吸开始: 强度 {Intensity}");
-                                    OnBreathStarted.Invoke();
-                                }
+                                Debug.Log($"[UDPReceiver] StateChange -> 频率: {stateData.frequency} -> {Frequency}");
                             }
-                            break;
-
-                        default:
-                            Debug.LogWarning($"[UDPReceiver] 未知的消息类型: {baseData.type}");
                             break;
                     }
                 }
@@ -157,7 +148,7 @@ public class UDPReceiver : MonosingletonTemp<UDPReceiver>
         }
         catch (Exception e)
         {
-            Debug.LogError($"[UDPReceiver] Error: {e.Message}");
+            Debug.LogError($"[UDPReceiver] 接收错误: {e.Message}\n{e.StackTrace}");
         }
 
         if (isMeasuring && Intensity > 0)
