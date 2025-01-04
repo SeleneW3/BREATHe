@@ -51,7 +51,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private float speedBoostAmount = 2f;    // 加速倍数
     [SerializeField] private float speedBoostDuration = 3f;  // 加速持续时间
     [SerializeField] private GameObject rippleEffectPrefab;  // 涟漪预制体
-    [SerializeField] private float rippleAnimationDuration = 0.5f;  // 涟漪动画持续时间
+    [SerializeField] private float rippleAnimationDuration = 1f;  // 涟漪动画持续时间
     private Coroutine speedBoostCoroutine;
 
     [Header("Ground Effects")]
@@ -59,13 +59,17 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private float effectDuration = 1f;       // 效果持续时间
 
     [Header("Speed Settings")]
-    [SerializeField] private float minSpeed = 2.5f;      // 最小速度
+    [SerializeField] private float minSpeed = 4f;      // 最小速度
     [SerializeField] private float maxSpeed = 5.5f;      // 最大速度
     [SerializeField] private float minFrequency = 1f;    // 最小频率
     [SerializeField] private float maxFrequency = 10f;   // 最大频率
     [SerializeField] private float currentFrequency;     // 当前频率
     private float baseSpeed;                             // 基础速度（由频率映射）
     private bool isSpeedBoosted = false;                // 是否处于加速状态
+
+    [Header("Bounce Settings")]
+    [SerializeField] private float maxBounceVelocity = 15f;  // 最大弹跳速度
+    [SerializeField] private float minBounceVelocity = 2f;   // 最小弹跳速度
 
     private void Awake()
     {
@@ -277,6 +281,11 @@ public class PlayerManager : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Ground"))
         {
+            // 限制垂直速度
+            float currentVelocityY = rb.velocity.y;
+            float clampedVelocityY = Mathf.Clamp(currentVelocityY, -maxBounceVelocity, maxBounceVelocity);
+            rb.velocity = new Vector2(rb.velocity.x, clampedVelocityY);
+
             // 播放弹跳音效
             if (AudioManager.Instance != null)
             {
