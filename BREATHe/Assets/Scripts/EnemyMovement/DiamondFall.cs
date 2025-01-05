@@ -5,15 +5,23 @@ public class DiamondFall : MonoBehaviour
     [Header("Diamond Settings")]
     [SerializeField] private float fallSpeed = 8.0f;
     [SerializeField] private string collectSound = "Collect";  // 收集音效
-    [SerializeField] private ParticleSystem collectEffect;     // 收集特效
 
     private Vector3 startPosition;  // 存储初始位置
     private bool canFall = false;
     private bool isCollected = false;
+    private SpriteRenderer spriteRenderer;
+    private Collider2D myCollider;
+
+    void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        myCollider = GetComponent<Collider2D>();
+    }
 
     void Start()
     {
         startPosition = transform.position;
+        ResetDiamond();  // 确保初始状态正确
     }
 
     void Update()
@@ -48,19 +56,16 @@ public class DiamondFall : MonoBehaviour
             AudioManager.Instance.PlaySound(collectSound);
         }
 
-        // 播放收集特效
-        if (collectEffect != null)
+        // 触发玩家动画
+        if (PlayerManager.Instance != null)
         {
-            ParticleSystem effect = Instantiate(collectEffect, transform.position, Quaternion.identity);
-            Destroy(effect.gameObject, effect.main.duration);
+            // 假设 PlayerManager 有一个播放涟漪动画的方法
+            PlayerManager.Instance.PlayRippleEffect();
         }
 
         // 隐藏钻石
-        GetComponent<SpriteRenderer>().enabled = false;
-        GetComponent<Collider2D>().enabled = false;
-
-        // 延迟销毁物体（等待音效和特效播放完）
-        Destroy(gameObject, 1f);
+        if (spriteRenderer != null) spriteRenderer.enabled = false;
+        if (myCollider != null) myCollider.enabled = false;
     }
 
     public void StartFalling()
@@ -75,10 +80,8 @@ public class DiamondFall : MonoBehaviour
         isCollected = false;
         
         // 重新启用渲染和碰撞
-        if (GetComponent<SpriteRenderer>() != null)
-            GetComponent<SpriteRenderer>().enabled = true;
-        if (GetComponent<Collider2D>() != null)
-            GetComponent<Collider2D>().enabled = true;
+        if (spriteRenderer != null) spriteRenderer.enabled = true;
+        if (myCollider != null) myCollider.enabled = true;
     }
 
     private void OnEnable()

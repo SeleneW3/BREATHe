@@ -429,7 +429,7 @@ public class PlayerManager : MonoBehaviour
         speedBoostCoroutine = StartCoroutine(SpeedBoostRoutine());
     }
 
-    private void PlayRippleEffect()
+    public void PlayRippleEffect()
     {
         if (rippleEffectPrefab != null)
         {

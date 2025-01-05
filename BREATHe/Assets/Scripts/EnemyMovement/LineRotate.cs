@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class LineRotate : MonoBehaviour
 {
-    public Vector3 rotationAxis = new Vector3(1, 0, 1);
-    public float rotationSpeed = 30f; // 旋转速度，单位为度/秒
+    public Vector3 rotationAxis = new Vector3(0, 0, 1);
+    public float rotationSpeed = 20f; // 旋转速度，单位为度/秒
 
     void Update()
     {
