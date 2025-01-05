@@ -25,10 +25,12 @@ RATE = 44100
 
 # 呼吸检测参数
 breath_count = 0  # 呼吸次数
-THRESHOLD = 0.002     # 初始阈值
+THRESHOLD = 0.015     # 初始阈值
 MAX_THRESHOLD = 0.05     # 呼吸的最高强度阈值
 LOW_THRESHOLD_FACTOR = 0.3  # 呼吸结束的低强度阈值占比
 is_above_threshold = False  # 标记是否处于呼吸周期
+breath_start_time = 0  # 初始化呼吸开始时间
+breath_end_time = 0  # 初始化呼吸结束时间
 
 # 最小呼吸持续时间
 MIN_BREATH_DURATION = 0.15  # 最小呼吸周期为 0.15 秒
@@ -236,6 +238,7 @@ factor_slider, factor_var = create_threshold_control(threshold_frame, "低阈值
 # 在文件开头的全局变量部分添加
 update_task = None  # 用于存储更新任务的ID
 last_valid_frequency = 0  # 添加这行到文件开头的全局变量区域
+frequency = 0  # 初始化频率变量
 
 # 替换原来的 update_status_display 函数
 def update_status_display():
@@ -345,7 +348,7 @@ def update(frame):
     global is_above_threshold, last_time, last_intensity, breath_start_intensity
     global breath_end_time, breath_count, frequency, times, intensities
     global breath_events, is_calibrating, noise_baseline, calibration_samples
-    global last_valid_frequency  # 确保在函数开头声明
+    global last_valid_frequency, breath_start_time  # 添加breath_start_time到global声明中
 
     try:
         # 读取音频数据
@@ -425,19 +428,20 @@ def update(frame):
                 'is_breathing': is_above_threshold,
                 'time': current_time,
                 'intensity': intensity,
-                'frequency': last_valid_frequency,
+                'frequency': frequency,  # 直接使用全局变量
                 'breath_count': breath_count
             }
+            print(f"发送状态变化数据: {json.dumps(data, ensure_ascii=False, indent=2)}")
         else:
             data = {
                 'type': 'update',
                 'is_breathing': is_above_threshold,
                 'intensity': intensity,
-                'frequency': last_valid_frequency
+                'frequency': frequency  # 直接使用全局变量
             }
         
         # 打印完整的发送数据
-        print(f"[DEBUG] 发送数据包: {json.dumps(data, indent=2)}")
+      #  print(f"[DEBUG] 发送数据包: {json.dumps(data, indent=2)}")
         udp_socket.sendto(json.dumps(data).encode(), (HOST, PORT))
     except BlockingIOError:
         pass
