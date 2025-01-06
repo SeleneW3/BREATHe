@@ -2,9 +2,6 @@ using UnityEngine;
 
 public class Food1 : MonoBehaviour
 {
-    [Header("Food Settings")]
-    [SerializeField] private string pickupSound = "Pickup";  // 拾取音效名称
-    
     [Header("Animation Settings")]
     [SerializeField] private float rotateSpeed = 100f;      // 旋转速度
     [SerializeField] private float floatSpeed = 2f;         // 上下浮动速度
@@ -24,12 +21,12 @@ public class Food1 : MonoBehaviour
     private void Start()
     {
         startPos = transform.position;
-        ResetFood();  // 确保初始状态正确
+        ResetFood();
     }
 
     private void Update()
     {
-        if (!isCollected)  // 只在未被收集时播放动画
+        if (!isCollected)
         {
             // 旋转动画
             transform.Rotate(Vector3.forward * rotateSpeed * Time.deltaTime);
@@ -44,10 +41,10 @@ public class Food1 : MonoBehaviour
     {
         if (!isCollected && collision.CompareTag("Player"))
         {
-            // 播放拾取音效
+            // 播放食物收集音效（循环使用三种音效）
             if (AudioManager.Instance != null)
             {
-                AudioManager.Instance.PlayCollectSound(AudioManager.SoundNames.FOOD_COLLECT);
+                AudioManager.Instance.PlayFoodSound();
             }
 
             // 触发加速效果

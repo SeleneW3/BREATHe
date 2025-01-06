@@ -50,6 +50,11 @@ public class AudioManager : MonoBehaviour
         // 其他音效
         public const string DEATH = "Death";
         public const string WIND = "Wind";
+
+        // Food音效
+        public const string FOOD_COLLECT_1 = "Food1";
+        public const string FOOD_COLLECT_2 = "Food2";
+        public const string FOOD_COLLECT_3 = "Food3";
     }
 
     private void Awake()
@@ -316,5 +321,20 @@ public class AudioManager : MonoBehaviour
 
         PlaySound(bounceSounds[currentBounceIndex]);
         currentBounceIndex = (currentBounceIndex + 1) % bounceSounds.Length;
+    }
+
+    // 循环播放食物收集音效
+    private int currentFoodIndex = 0;
+    public void PlayFoodSound()
+    {
+        string[] foodSounds = new string[] 
+        { 
+            SoundNames.FOOD_COLLECT_1, 
+            SoundNames.FOOD_COLLECT_2, 
+            SoundNames.FOOD_COLLECT_3 
+        };
+
+        PlaySound(foodSounds[currentFoodIndex]);
+        currentFoodIndex = (currentFoodIndex + 1) % foodSounds.Length;
     }
 }

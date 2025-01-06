@@ -670,7 +670,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -824,7 +823,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3316248421315497178, guid: 1a201ce3bb836bd42a64345d6cf3d722, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1049,7 +1048,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3316248421315497178, guid: 1a201ce3bb836bd42a64345d6cf3d722, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1169,7 +1168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -1259,7 +1257,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -6776,7 +6773,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -6999,7 +6995,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -7786,7 +7781,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -8167,7 +8161,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -8188,7 +8181,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -8283,7 +8275,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -8522,7 +8513,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -8612,7 +8602,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -9716,7 +9705,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -11443,7 +11431,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -12751,7 +12738,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -12841,7 +12827,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -12878,7 +12863,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.43
+  m_Mass: 0.4
   m_LinearDrag: 1
   m_AngularDrag: 0.05
   m_GravityScale: 0.52
@@ -12989,7 +12974,7 @@ Transform:
   m_GameObject: {fileID: 779897934}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -33.43, y: -0.07, z: 0}
+  m_LocalPosition: {x: -33.36, y: -0.14, z: 0}
   m_LocalScale: {x: 1.277, y: 1.277, z: 1.277}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13035,8 +13020,8 @@ MonoBehaviour:
   minFrequency: 1
   maxFrequency: 10
   currentFrequency: 0
-  maxBounceVelocity: 20
-  minBounceVelocity: 4
+  maxBounceVelocity: 17
+  minBounceVelocity: 6
 --- !u!96 &779897940
 TrailRenderer:
   serializedVersion: 3
@@ -13873,7 +13858,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3316248421315497178, guid: 1a201ce3bb836bd42a64345d6cf3d722, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -14314,7 +14299,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -14582,7 +14566,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.26
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -14642,7 +14626,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.5
+      scalar: 0.72
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -14695,7 +14679,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.55
+      scalar: 1.43
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -19416,7 +19400,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -19823,7 +19806,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -20041,7 +20023,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -20548,7 +20529,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -22581,6 +22561,24 @@ MonoBehaviour:
     pitch: 1
     loop: 0
     source: {fileID: 0}
+  - name: Food1
+    clip: {fileID: 8300000, guid: 76cd95e9896ad004eb0f6011743adfe5, type: 3}
+    volume: 0.55
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+  - name: Food3
+    clip: {fileID: 8300000, guid: 7ac8288f142278a4db8dbcbda4df301a, type: 3}
+    volume: 0.55
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+  - name: Food2
+    clip: {fileID: 8300000, guid: 5cfe369458d3956409c04d7b4cdebb07, type: 3}
+    volume: 0.55
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
 --- !u!4 &1092898835
 Transform:
   m_ObjectHideFlags: 0
@@ -22682,7 +22680,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -23152,7 +23149,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -23242,7 +23238,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -23332,7 +23327,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -23824,7 +23818,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -23845,7 +23838,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -23940,7 +23932,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -24030,7 +24021,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -24120,7 +24110,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -29001,7 +28990,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3316248421315497178, guid: 1a201ce3bb836bd42a64345d6cf3d722, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -29335,7 +29324,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -29811,7 +29799,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -29983,7 +29970,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -30073,7 +30059,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -30163,7 +30148,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -30253,7 +30237,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -30437,7 +30420,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -30927,7 +30909,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -31027,7 +31008,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -31991,7 +31971,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -32403,7 +32382,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -32857,7 +32835,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3316248421315497178, guid: 1a201ce3bb836bd42a64345d6cf3d722, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -33250,7 +33228,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -33340,7 +33317,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -33430,7 +33406,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -37375,7 +37350,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -38772,7 +38746,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -39440,7 +39413,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -40369,7 +40341,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3316248421315497178, guid: 1a201ce3bb836bd42a64345d6cf3d722, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -40551,7 +40523,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3316248421315497178, guid: 1a201ce3bb836bd42a64345d6cf3d722, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -40671,7 +40643,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -41078,7 +41049,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7bde79d8f5c7145a97d75679c98c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupSound: Pickup
   rotateSpeed: 100
   floatSpeed: 2
   floatHeight: 0.5
@@ -41288,7 +41258,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3316248421315497178, guid: 1a201ce3bb836bd42a64345d6cf3d722, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
