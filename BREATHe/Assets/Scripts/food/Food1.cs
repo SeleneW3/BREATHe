@@ -11,30 +11,43 @@ public class Food1 : MonoBehaviour
     [SerializeField] private float floatHeight = 0.5f;      // 浮动高度
     
     private Vector3 startPos;  // 初始位置
+    private bool isCollected = false;
+    private SpriteRenderer spriteRenderer;
+    private Collider2D myCollider;
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        myCollider = GetComponent<Collider2D>();
+    }
 
     private void Start()
     {
         startPos = transform.position;
+        ResetFood();  // 确保初始状态正确
     }
 
     private void Update()
     {
-        // 旋转动画
-        transform.Rotate(Vector3.forward * rotateSpeed * Time.deltaTime);
-        
-        // 上下浮动动画
-        float newY = startPos.y + Mathf.Sin(Time.time * floatSpeed) * floatHeight;
-        transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        if (!isCollected)  // 只在未被收集时播放动画
+        {
+            // 旋转动画
+            transform.Rotate(Vector3.forward * rotateSpeed * Time.deltaTime);
+            
+            // 上下浮动动画
+            float newY = startPos.y + Mathf.Sin(Time.time * floatSpeed) * floatHeight;
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (!isCollected && collision.CompareTag("Player"))
         {
             // 播放拾取音效
             if (AudioManager.Instance != null)
             {
-                AudioManager.Instance.PlaySound(pickupSound);
+                AudioManager.Instance.PlayCollectSound(AudioManager.SoundNames.FOOD_COLLECT);
             }
 
             // 触发加速效果
@@ -43,8 +56,36 @@ public class Food1 : MonoBehaviour
                 PlayerManager.Instance.ActivateSpeedBoost();
             }
 
-            // 销毁食物
-            Destroy(gameObject);
+            // 隐藏食物
+            isCollected = true;
+            if (spriteRenderer != null) spriteRenderer.enabled = false;
+            if (myCollider != null) myCollider.enabled = false;
+        }
+    }
+
+    public void ResetFood()
+    {
+        transform.position = startPos;
+        isCollected = false;
+        
+        // 重新启用渲染和碰撞
+        if (spriteRenderer != null) spriteRenderer.enabled = true;
+        if (myCollider != null) myCollider.enabled = true;
+    }
+
+    private void OnEnable()
+    {
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.OnPlayerRespawn += ResetFood;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.OnPlayerRespawn -= ResetFood;
         }
     }
 }

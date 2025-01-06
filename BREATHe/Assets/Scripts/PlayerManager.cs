@@ -48,11 +48,14 @@ public class PlayerManager : MonoBehaviour
     public event System.Action OnPlayerRespawn;
 
     [Header("Speed Boost")]
-    [SerializeField] private float speedBoostAmount = 2f;    // 加速倍数
-    [SerializeField] private float speedBoostDuration = 3f;  // 加速持续时间
-    [SerializeField] private GameObject rippleEffectPrefab;  // 涟漪预制体
-    [SerializeField] private float rippleAnimationDuration = 1f;  // 涟漪动画持续时间
+    [SerializeField] private float speedBoostAmount = 2f;        // 加速倍数
+    [SerializeField] private float speedBoostDuration = 3f;      // 加速持续时间
+    [SerializeField] private float accelerationTime = 0.5f;      // 加速过渡时间
+    [SerializeField] private float decelerationTime = 1f;      // 减速过渡时间
+    [SerializeField] private GameObject rippleEffectPrefab;      // 涟漪预制体
+    [SerializeField] private float rippleAnimationDuration = 1f; // 涟漪动画持续时间
     private Coroutine speedBoostCoroutine;
+    private float currentSpeedMultiplier = 1f;                   // 当前速度倍数
 
     [Header("Ground Effects")]
     [SerializeField] private ParticleSystem groundParticles;  // 地面粒子效果
@@ -141,13 +144,13 @@ public class PlayerManager : MonoBehaviour
                 currentFrequency = UDPReceiver.Instance.Frequency;
                 baseSpeed = MapFrequencyToSpeed(currentFrequency);
                 float oldSpeed = moveSpeed;
-                moveSpeed = isSpeedBoosted ? baseSpeed * speedBoostAmount : baseSpeed;
+                moveSpeed = baseSpeed * currentSpeedMultiplier;  // 使用 currentSpeedMultiplier
 
                 // 只在速度变化时输出日志
                 if (Mathf.Abs(oldSpeed - moveSpeed) > 0.01f)
                 {
                     Debug.Log($"[PlayerManager] 速度更新: baseSpeed={baseSpeed}, " +
-                             $"isSpeedBoosted={isSpeedBoosted}, " +
+                             $"multiplier={currentSpeedMultiplier}, " +
                              $"oldSpeed={oldSpeed} -> newSpeed={moveSpeed}");
                 }
             }
@@ -455,26 +458,41 @@ public class PlayerManager : MonoBehaviour
 
     private IEnumerator SpeedBoostRoutine()
     {
-        // 启用加速
-        isSpeedBoosted = true;
-        float oldSpeed = moveSpeed;
-        moveSpeed = baseSpeed * speedBoostAmount;
-        
-        Debug.Log($"[SpeedBoost] 开始加速: baseSpeed={baseSpeed}, " +
-                  $"speedBoostAmount={speedBoostAmount}, " +
-                  $"oldSpeed={oldSpeed} -> newSpeed={moveSpeed}");
-        
         // 播放涟漪效果
         PlayRippleEffect();
 
-        yield return new WaitForSeconds(speedBoostDuration);
+        // 加速过渡
+        float elapsedTime = 0f;
+        float startMultiplier = currentSpeedMultiplier;
+        
+        while (elapsedTime < accelerationTime)
+        {
+            elapsedTime += Time.deltaTime;
+            currentSpeedMultiplier = Mathf.Lerp(startMultiplier, speedBoostAmount, elapsedTime / accelerationTime);
+            moveSpeed = baseSpeed * currentSpeedMultiplier;
+            yield return null;
+        }
+
+        // 保持最大速度
+        currentSpeedMultiplier = speedBoostAmount;
+        moveSpeed = baseSpeed * currentSpeedMultiplier;
+        yield return new WaitForSeconds(speedBoostDuration - accelerationTime - decelerationTime);
+
+        // 减速过渡
+        elapsedTime = 0f;
+        startMultiplier = currentSpeedMultiplier;
+        
+        while (elapsedTime < decelerationTime)
+        {
+            elapsedTime += Time.deltaTime;
+            currentSpeedMultiplier = Mathf.Lerp(startMultiplier, 1f, elapsedTime / decelerationTime);
+            moveSpeed = baseSpeed * currentSpeedMultiplier;
+            yield return null;
+        }
 
         // 恢复正常速度
-        oldSpeed = moveSpeed;
-        isSpeedBoosted = false;
+        currentSpeedMultiplier = 1f;
         moveSpeed = baseSpeed;
-        
-        Debug.Log($"[SpeedBoost] 结束加速: oldSpeed={oldSpeed} -> newSpeed={moveSpeed}");
     }
 
     private float MapFrequencyToSpeed(float frequency)
